@@ -4,19 +4,27 @@
 //
 //  Created by Raghad Alzemami on 15/08/1447 AH.
 //
-// Foundation provides UUID and basic data types
+
 import Foundation
 
-// Identifiable allows SwiftUI to track journeys uniquely
-struct Journey: Identifiable {
-    
-    // Unique identifier for this journey
-    let id: UUID
-    
-    // Display name shown to the user
+typealias JourneyID = String
+typealias SceneID   = String
+typealias ItemID    = String
+
+struct Journey: Identifiable, Codable, Hashable {
+    let id: JourneyID
     let title: String
-    
-    // Ordered list of scenes that make up the journey
-    // Each scene represents a moment in time
-    //let scenes: [JourneyScene]
+    let description: String
+
+    /// Ordered flow: walk → fireStory → nightExploration → sunrise
+    let scenes: [JourneyScene]
+
+    /// Items that belong to this journey only
+    let items: [Items]
+
+    /// Required to trigger completed sunrise early
+    let requiredItemIDs: [ItemID]
+
+    /// Controls timing, grace, lost detection, guidance strength
+    let journeyRules: JourneyRules
 }

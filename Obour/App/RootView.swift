@@ -19,25 +19,35 @@ struct RootView: View {
         switch appState.route {
             
         case .launch:
-            Text("Launch Screen")
-            //LaunchView()
+            LaunchView()
 
         case .onboarding:
-            Text("Screen")
-            //OnboardingView()
+            OnboardingViewPlaceholder()
 
-        case .mainMenu:
-            Text("Screen")
-            //MainMenuView()
+        case .home:
+            HomeView()
 
         case .journey(let journey):
-            Text("Screen")
-            //JourneyView(
-            //   viewModel: JourneyViewModel(journey: journey)
-            //)
+            JourneyPlaceholderView(title: journey.title)
+
         case .end:
             EndView()
         }
     }
 }
 
+// Temporary placeholders so the app compiles cleanly until you add real views.
+private struct OnboardingViewPlaceholder: View {
+    var body: some View {
+        Text("Onboarding Screen (to be implemented)")
+            .padding()
+    }
+}
+
+private struct JourneyPlaceholderView: View {
+    let title: String
+    var body: some View {
+        Text("Journey Screen for \(title) (to be implemented)")
+            .padding()
+    }
+}

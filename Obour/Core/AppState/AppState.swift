@@ -13,7 +13,7 @@ final class AppState: ObservableObject {
     enum Route {
         case launch
         case onboarding
-        case mainMenu
+        case home
         case journey(Journey)
         case end
     }

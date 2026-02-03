@@ -14,6 +14,9 @@
 		8CB8A9A92F32661300FBA086 /* Exceptions for "Obour" folder in "Obour" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				AppDelegate.swift,
+				Features/Collection/CollectionViewModel.swift,
+				Features/Home/HomeViewModel.swift,
 				Resources/Audio/Ambient/Untitled.swift,
 				Resources/Audio/Effects/Untitled.swift,
 				Resources/Audio/Narration/Untitled.swift,
