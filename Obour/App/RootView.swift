@@ -23,12 +23,15 @@ struct RootView: View {
             //LaunchView()
 
         case .onboarding:
+            Text("Screen")
             //OnboardingView()
 
         case .mainMenu:
+            Text("Screen")
             //MainMenuView()
 
         case .journey(let journey):
+            Text("Screen")
             //JourneyView(
             //   viewModel: JourneyViewModel(journey: journey)
             //)
