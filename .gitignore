@@ -1,0 +1,18 @@
+# =====================
+# Xcode
+# =====================
+DerivedData/
+build/
+
+# User-specific Xcode data
+xcuserdata/
+*.xcuserstate
+*.xcuserdatad/
+*.xcscmblueprint
+*.xccheckout
+
+# SwiftUI previews
+*.preview-thumbnails/
+
+# macOS
+.DS_Store
