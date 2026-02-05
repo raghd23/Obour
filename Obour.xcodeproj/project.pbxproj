@@ -11,11 +11,15 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		8CB8A8692F31E09400FBA086 /* Exceptions for "Obour" folder in "Obour" target */ = {
+		8CB8A9A92F32661300FBA086 /* Exceptions for "Obour" folder in "Obour" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Core/AppState/AppState.swift,
-				Core/Models/Journey.swift,
+				AppDelegate.swift,
+				Features/Collection/CollectionViewModel.swift,
+				Features/Home/HomeViewModel.swift,
+				Resources/Audio/Ambient/Untitled.swift,
+				Resources/Audio/Effects/Untitled.swift,
+				Resources/Audio/Narration/Untitled.swift,
 			);
 			target = 8CB8A82C2F30852300FBA086 /* Obour */;
 		};
@@ -25,7 +29,7 @@
 		8CB8A82F2F30852300FBA086 /* Obour */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				8CB8A8692F31E09400FBA086 /* Exceptions for "Obour" folder in "Obour" target */,
+				8CB8A9A92F32661300FBA086 /* Exceptions for "Obour" folder in "Obour" target */,
 			);
 			path = Obour;
 			sourceTree = "<group>";
