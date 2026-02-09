@@ -15,7 +15,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				AppDelegate.swift,
-				Features/Collection/CollectionViewModel.swift,
 				Resources/Audio/Ambient/Untitled.swift,
 				Resources/Audio/Effects/Untitled.swift,
 				Resources/Audio/Narration/Untitled.swift,

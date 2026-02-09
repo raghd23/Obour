@@ -15,6 +15,11 @@ struct Journey: Identifiable, Codable, Hashable {
     let id: JourneyID
     let title: String
     let description: String
+    
+    /// New UI-specific fields
+    let outline: String?              // Optional: highlighted/outline text
+    let subOutline: String?           // Optional: secondary outline
+    let imageName: String?            // Name of the image asset to show
 
     /// Ordered flow: walk → fireStory → nightExploration → sunrise
     let scenes: [JourneyScene]
