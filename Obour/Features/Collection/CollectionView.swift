@@ -67,12 +67,12 @@ struct CollectionView: View {
                             .gesture(
                                 DragGesture(minimumDistance: 20)
                                     .updating($dragOffset) { value, state, _ in
-                                        if value.translation.height < -20 && index == 0 {
+                                        if abs(value.translation.height) > 20 && index == 0 {
                                             state = value.translation
                                         }
                                     }
                                     .onEnded { value in
-                                        if value.translation.height < -50 && index == 0 {
+                                        if abs(value.translation.height) > 50 && index == 0 {
                                             withAnimation(.spring()) {
                                                 collectionVM.rotateItems()
                                             }
