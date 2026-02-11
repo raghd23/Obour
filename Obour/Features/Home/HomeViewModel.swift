@@ -95,7 +95,7 @@ static let preview: HomeViewModel = {
             description: "Mystery in the desert, light at the end",
             outline: "Red Horizon",
             subOutline: "10:00",
-            imageName: "desertCard",
+            imageName: "DesertCard",
             scenes: [],
             items: [],
             requiredItemIDs: [],
