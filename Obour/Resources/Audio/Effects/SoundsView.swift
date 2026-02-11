@@ -16,11 +16,10 @@ class SoundManger{
     //Variable that holdes AVAudioPlayer. It plays music.
     var player: AVAudioPlayer?
     
-    //Treats tada and badum as strings
+    //Treats sounds name as strings
     enum SoundOption: String{
-        case tada
-        case badum
         case card
+        case ghostBase
     }
     
     func playSound(sound: SoundOption){
@@ -49,20 +48,16 @@ class HapticManger{
 }
 
 
-struct TestSounds: View {
+struct SoundsView: View {
     var body: some View {
         VStack(spacing: 40){
             Button("Play Sound 1"){
-                SoundManger.instance.playSound(sound: .tada)
+                SoundManger.instance.playSound(sound: .card)
                 HapticManger.instance.impact(style: .heavy)
-                
-            }
-            Button("Impact"){
-                HapticManger.instance.impact(style: .heavy)
-                
             }
             Button("Play Sound 2"){
-                SoundManger.instance.playSound(sound: .badum)
+                SoundManger.instance.playSound(sound: .ghostBase)
+                HapticManger.instance.impact(style: .medium)
                 
             }
         }
@@ -70,5 +65,5 @@ struct TestSounds: View {
 }
 
 #Preview {
-    TestSounds()
+    SoundsView()
 }
