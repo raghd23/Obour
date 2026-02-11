@@ -8,12 +8,10 @@
 import SwiftUI
 
 // MARK: - Journey Main View
-// This view represents the entry screen of a Journey.
-// It shows the background, title, description, and start button.
+//
 struct JourneyView: View {
+    @State private var isMuted: Bool = false
 
-    // ViewModel is stored as @State so SwiftUI
-    // keeps it alive while the view is active
     @State private var viewModel: JourneyViewModel
 
     // Custom initializer to inject the Journey model
@@ -43,7 +41,6 @@ private extension JourneyView {
     var background: some View {
         ZStack {
             Image("stars")
-            // 1️⃣ Gradient background (top black → bottom red)
             LinearGradient(
                 colors: [
                     Color.black,
@@ -58,7 +55,6 @@ private extension JourneyView {
                 .frame(maxWidth: .infinity)
                 .offset(y: -100)
                 .opacity(0.15)
-            // 2️⃣ Image anchored to the bottom
             VStack {
                 Spacer()
 
@@ -96,9 +92,9 @@ private extension JourneyView {
             Spacer()
 
             Button {
-                // info action later
+                isMuted.toggle()
             } label: {
-                Image(systemName: "speaker.wave.2.fill")
+                Image(systemName: isMuted ? "speaker.slash.fill" : "speaker.wave.2.fill")
                     .font(.system(size: 18, weight: .medium))
                     .frame(width: 44, height: 44)
                     .foregroundStyle(.white)
@@ -107,10 +103,11 @@ private extension JourneyView {
                             .glassEffect(.clear)
                     )
             }
+
         }
         .foregroundStyle(.black)
         .padding(.horizontal, 24)
-        .padding(.top, 25)
+        .padding(.top, 30)
     }
 }
 
@@ -132,25 +129,33 @@ private extension JourneyView {
             HStack {
                 Spacer() // pushes content to the right
 
-                VStack(alignment: .trailing, spacing: 16) {
+                VStack(alignment: .trailing, spacing: 12) {
+
+                    // Icon above the title
                     Image(systemName: "moon.dust.fill")
-                        .font(Font.largeTitle.bold())
-                    // Journey title
-                    Text("المدى الأحمر")
-                        .font(.largeTitle.bold())
+                        .font(.system(size: 40, weight: .bold))
+                        .foregroundStyle(.white)
+
+                    // Title (Figma-style)
+                    Text("المدى\nالأحمر")
+                        .font(.system(size: 48, weight: .bold))   // ⬅️ bigger than largeTitle
                         .foregroundStyle(.white)
                         .multilineTextAlignment(.trailing)
+                        .lineSpacing(-6)                           // ⬅️ tighter like Figma
+                        .padding(.bottom, 8)
 
                     // Journey description
                     Text("ارتحل مع الرحلة عبر سكون الصحراء، حيث يقودك الغموض في رمالها إلى النور.")
-                        .font(.body)
+                        .font(.system(size: 16, weight: .regular))
                         .foregroundStyle(.white.opacity(0.85))
                         .multilineTextAlignment(.trailing)
                         .lineSpacing(6)
+                        .frame(maxWidth: 260, alignment: .trailing) // ⬅️ narrower text block
                 }
+
             }
             .padding(.horizontal, 32)
-            .padding(.bottom, 24)
+            .padding(.bottom, 30)
 
             HStack {
                 Spacer() // ⬅️ pushes everything to the right
@@ -172,7 +177,7 @@ private extension JourneyView {
                 startButton
             }
             .padding(.horizontal, 32)
-            .padding(.bottom, 24)
+            .padding(.bottom, 60)
 
             
             
@@ -197,14 +202,27 @@ private extension JourneyView {
                 .foregroundStyle(.white)
                 .padding(.horizontal, 32)
                 .padding(.vertical, 14)
-                .background(
-                    Capsule()
-                        .fill(Color.red.opacity(0.001))
-                        .glassEffect()
-                )
+                .background {
+                                ZStack {
+                                    // 1️⃣ Radiant gradient core
+                                    Capsule()
+                                        .fill(
+                                            LinearGradient(
+                                                colors: [
+                                                    Color(red: 0.75, green: 0.25, blue: 0.2),
+                                                    Color(red: 0.35, green: 0.12, blue: 0.1)
+                                                ],
+                                                startPoint: .leading,
+                                                endPoint: .trailing
+                                            )
+                                            .opacity(0.25)
+                                        )
+                                        .glassEffect(.clear)
+                                      //  .opacity(0.25)
+                                }
+                            }
+
         }
-        
-        //.padding(.bottom, 40)
         
     }
 }
@@ -214,8 +232,8 @@ private extension JourneyView {
     JourneyView(
         journey: Journey(
             id: "preview-journey",
-            title: " الأحمر",
-            description: "ارتحل مع الرحلة عبر سكون الصحراء، حيث يقودك الغموض في رمالها إلى النور.",
+            title: "ر",
+            description: "ارتحل مع الرحلة عبر سكون الصحراء، حيث يقودك الغموض في رمالها إلى النور",
             scenes: [],
             items: [],
             requiredItemIDs: [],
