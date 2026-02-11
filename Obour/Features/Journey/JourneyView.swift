@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AVKit
 
 // MARK: - Journey Main View
 //
@@ -37,27 +38,30 @@ struct JourneyView: View {
 //
 private extension JourneyView {
 
-    // Background with gradient + bottom-positioned image
     var background: some View {
         ZStack {
-            Image("stars")
+
+            // 🌒 2️⃣ Dark → Red Gradient Overlay
             LinearGradient(
                 colors: [
                     Color.black,
-                    Color(red: 0.55, green: 0.05, blue: 0.05) // deep red
+                    Color(red: 0.55, green: 0.05, blue: 0.05)
                 ],
                 startPoint: .top,
                 endPoint: .bottom
             )
-            Image("stars")
-                .resizable()
-                .scaledToFit()
-                .frame(maxWidth: .infinity)
-                .offset(y: -100)
-                .opacity(0.15)
+            .ignoresSafeArea()
+
+            // 🌌 1️⃣ Star Video
+                        LoopingVideoView(videoName: "starsMoving", videoType: "mov")
+                            .ignoresSafeArea()
+                            .blendMode(.lighten)
+                            .opacity(0.4)
+                           
+            // 🌅 3️⃣ Sun Image at Bottom
             VStack {
                 Spacer()
-
+                
                 Image("RedSun")
                     .resizable()
                     .scaledToFit()
@@ -67,6 +71,67 @@ private extension JourneyView {
     }
 }
 
+
+// MARK: - Looping Video View (simple + works)
+
+struct LoopingVideoView: UIViewRepresentable {
+    let videoName: String
+    let videoType: String
+
+    func makeUIView(context: Context) -> LoopingPlayerView {
+        let view = LoopingPlayerView()
+
+        guard let url = Bundle.main.url(forResource: videoName, withExtension: videoType) else {
+            print("❌ Video not found: \(videoName).\(videoType)")
+            return view
+        }
+
+        view.configure(with: url)
+        return view
+    }
+
+    func updateUIView(_ uiView: LoopingPlayerView, context: Context) { }
+}
+
+// MARK: - UIKit View that keeps the player alive
+
+final class LoopingPlayerView: UIView {
+
+    private let playerLayer = AVPlayerLayer()
+    private var player: AVPlayer? // ✅ strong reference (keeps video alive)
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        layer.addSublayer(playerLayer)
+        playerLayer.videoGravity = .resizeAspectFill
+    }
+
+    required init?(coder: NSCoder) { fatalError() }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        playerLayer.frame = bounds // ✅ always match view size
+    }
+
+    func configure(with url: URL) {
+        let player = AVPlayer(url: url)
+        player.isMuted = true
+        player.actionAtItemEnd = .none
+
+        NotificationCenter.default.addObserver(
+            forName: .AVPlayerItemDidPlayToEndTime,
+            object: player.currentItem,
+            queue: .main
+        ) { [weak player] _ in
+            player?.seek(to: .zero)
+            player?.play()
+        }
+
+        self.player = player
+        playerLayer.player = player
+        player.play()
+    }
+}
 
 //
 // MARK: - Top Controls (Audio + Info)
