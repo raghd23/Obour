@@ -11,6 +11,8 @@ final class CollectionViewModel: ObservableObject {
 
     // MARK: - Immutable input
     let journey: Journey
+    // MARK: - Persistence
+    private let collectedItemsKey = "CollectedItemsKey"
 
     // MARK: - Published UI state
     @Published private(set) var items: [Items]
@@ -19,9 +21,33 @@ final class CollectionViewModel: ObservableObject {
     // MARK: - Init
     init(journey: Journey) {
         self.journey = journey
-        self.items = journey.items
-        self.currentItem = journey.items.first
+        // Don't assign journey.items yet; list starts empty
+        self.items = []
+        self.currentItem = nil
+        loadCollectedItems() // load saved items if any
     }
+    
+    // MARK: - Add an item when triggered by scene
+    func addItem(_ item: Items) {
+        guard !items.contains(where: { $0.id == item.id }) else { return }
+        items.append(item)
+        currentItem = items.first
+        saveCollectedItems() // save to persistent storage
+        print("Added item: \(item.name)")
+    }
+    // MARK: - Persistence
+
+    func saveCollectedItems() {
+        let ids = items.map { $0.id }
+        UserDefaults.standard.set(ids, forKey: collectedItemsKey)
+    }
+
+    func loadCollectedItems() {
+        guard let savedIDs = UserDefaults.standard.array(forKey: collectedItemsKey) as? [String] else { return }
+        items = savedIDs.compactMap { ItemData.getItem(by: $0) }
+        currentItem = items.first
+    }
+
 
     // MARK: - Card rotation (same pattern as Home)
     func rotateItems() {
@@ -37,50 +63,15 @@ final class CollectionViewModel: ObservableObject {
     func didSelectItem(_ item: Items) {
         // TODO: Hook item detail / encyclopedia / AR / sound later
     }
+    func curtainShowItem(byID id: String) {
+        guard let item = ItemData.getItem(by: id) else { return }
+        addItem(item)
+    }
+    
 }
 
-#if DEBUG
-extension CollectionViewModel {
 
-    static let preview: CollectionViewModel = {
-        let sampleItems: [Items] = [
-            Items(
-                id: "plant-1",
-                name: "Eve Tree",
-                description: "An optimistic plant that dances in the morning sun. An optimistic plant that dances in the morning sun. An optimistic plant that dances in the morning sun. An optimistic plant that dances in the morning sun.",
-                imageAsset: "item1",
-                iconAsset: "leaf"
-            ),
-            Items(
-                id: "plant-2",
-                name: "Sand Flower",
-                description: "It flowers in the most difficult times, a symbol of constant emtional change. It flowers in the most difficult times, a symbol of constant emtional change. It flowers in the most difficult times, a symbol of constant emtional change.",
-                imageAsset: "item2",
-                iconAsset: "leaf.fill"
-            )
-        ]
-
-        let previewJourney = Journey(
-            id: "preview-journey",
-            title: "Experamental Journey",
-            description: "Used for preview only.",
-            outline: nil,
-            subOutline: nil,
-            imageName: nil,
-            scenes: [],
-            items: sampleItems,
-            requiredItemIDs: [],
-            journeyRules: JourneyRules(
-                softLimitSeconds: 0,
-                hardLimitSeconds: 0,
-                lostNoProgressSeconds: 0,
-                graceVolumeMultiplier: 1,
-                lostVolumeMultiplier: 1
-            )
-        )
-
-        return CollectionViewModel(journey: previewJourney)
-    }()
-}
-#endif
+//Later, when a SpriteKit node is triggered, you just call:
+//
+//collectionVM.curtainShowItem(byID: "plant-1")
 
