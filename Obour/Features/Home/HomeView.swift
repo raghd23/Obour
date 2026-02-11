@@ -46,7 +46,11 @@ struct HomeView: View {
                     // Stacked cards
                     ZStack {
                         ForEach(Array(homeVM.journeys.enumerated()), id: \.1.id) { index, journey in
-                            JourneyCardView(journey: journey)
+                            JourneyCardView(journey: journey,
+                                            forwardAction: journey.id == "desert"
+                                                ? { appState.route = .journey(journey) } // only desert has action
+                                                : nil // sea and others have no action → lock
+                            )
                                 .offset(y: -CGFloat(index) * 44)
                                 .zIndex(Double(homeVM.journeys.count - index))
                                 .gesture(
