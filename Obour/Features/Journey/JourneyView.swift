@@ -62,7 +62,7 @@ private extension JourneyView {
             VStack {
                 Spacer()
                 
-                Image("RedSun")
+                Image("RedSunMounten")
                     .resizable()
                     .scaledToFit()
                     .frame(maxWidth: .infinity)
