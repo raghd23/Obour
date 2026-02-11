@@ -78,6 +78,8 @@ class HomeViewModel: ObservableObject {
     
     // MARK: - Card swipe handling
     func rotateJourneys() {
+        SoundManger.instance.playSound(sound: .card)
+        HapticManger.instance.impact(style: .medium)
         guard !journeys.isEmpty else { return }
         let first = journeys.removeFirst()
         journeys.append(first)

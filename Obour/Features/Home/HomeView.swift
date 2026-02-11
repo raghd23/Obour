@@ -28,25 +28,7 @@ struct HomeView: View {
                     .ignoresSafeArea()
 
                 VStack {
-                    // Top bar
-                    HStack {
-                        Spacer()
-                        Button(action: {
-                            // Sound button logic for current journey
-                        }) {
-                            Image(systemName: "speaker.wave.2.fill")
-                                .foregroundColor(.white)
-                                .font(.system(size: 16))
-                                .padding()
-                        }
-                        .buttonStyle(.plain)
-                        .frame(width: 40, height: 40)
-                        .glassEffect(.clear.interactive().tint(.black.opacity(0.1)))
-                        
-                        
-                        
-                    }
-                    .padding()
+
 
                     // Title & Subtitle
                     VStack(spacing: 4) {
@@ -57,7 +39,7 @@ struct HomeView: View {
                             .bold()
                             .foregroundColor(.white)
                     }
-                    .padding(.top, 20)
+                    .padding(.top, 80)
 
                     Spacer()
 

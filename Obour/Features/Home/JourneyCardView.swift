@@ -75,6 +75,7 @@ struct JourneyCardView: View {
                 HStack{
                     Spacer()
                     Button(action: {
+                        HapticManger.instance.impact(style: .medium)
                         // Sound button logic for current journey
                     }) {
                         Image(systemName: "chevron.forward")

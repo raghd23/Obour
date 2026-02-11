@@ -16,7 +16,6 @@
 			membershipExceptions = (
 				AppDelegate.swift,
 				Resources/Audio/Ambient/Untitled.swift,
-				Resources/Audio/Effects/Untitled.swift,
 				Resources/Audio/Narration/Untitled.swift,
 			);
 			target = 8CB8A82C2F30852300FBA086 /* Obour */;
@@ -271,7 +270,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = YM2L953M9C;
+				DEVELOPMENT_TEAM = 2TVS2FW6G2;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -303,7 +302,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = YM2L953M9C;
+				DEVELOPMENT_TEAM = 2TVS2FW6G2;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;

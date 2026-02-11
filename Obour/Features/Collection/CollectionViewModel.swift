@@ -25,6 +25,8 @@ final class CollectionViewModel: ObservableObject {
 
     // MARK: - Card rotation (same pattern as Home)
     func rotateItems() {
+        SoundManger.instance.playSound(sound: .card)
+        HapticManger.instance.impact(style: .medium)
         guard !items.isEmpty else { return }
         let first = items.removeFirst()
         items.append(first)
