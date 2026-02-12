@@ -29,7 +29,7 @@ class SoundManger{
         case ghostCloseUp
         case boiling
         case fire
-        case soundDesign
+        case backgroundSound
     }
     
     func playSound(sound: SoundOption){
@@ -67,7 +67,7 @@ class SoundManger{
      // MARK: - Public Functions
      func playBackgroundMusic() {
          if backgroundPlayer == nil || backgroundPlayer?.isPlaying == false {
-             backgroundPlayer = play(soundName: SoundOption.soundDesign.rawValue, loop: true)
+             backgroundPlayer = play(soundName: SoundOption.backgroundSound.rawValue, loop: true)
          }
      }
      
@@ -92,6 +92,15 @@ class SoundManger{
          // Placeholder: you can change to ghostBase or ghostCloseUp later
          ghostPlayer = play(soundName: SoundOption.ghostBase.rawValue)
      }
+    // In SoundManager
+    func playFireSound(loop: Bool = false) {
+        firePlayer = play(soundName: SoundOption.fire.rawValue, loop: loop)
+    }
+
+    func stopFireSound() {
+        firePlayer?.stop()
+        firePlayer = nil
+    }
  }
 
 

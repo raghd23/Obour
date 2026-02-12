@@ -9,7 +9,7 @@ import SwiftUI
 import AVKit
 
 struct SplashView: View {
-
+    @EnvironmentObject var appState: AppState
     @State private var isActive = false
     @State private var sunOpacity: Double = 0
 
@@ -40,12 +40,12 @@ struct SplashView: View {
 
                     .padding(25)
 
-                Text("حيث يُسمَع السكون")
+                Text("Where silence is heard")
                     .font(.title.bold())
                     .foregroundStyle(.white)
                     .opacity(sunOpacity)
 
-                Text("تجربة تعاش، تُصغى، تُرى!")
+                Text("An experience to be lived, listened to, and seen.")
                     .foregroundStyle(.white.opacity(0.8))
                     .opacity(sunOpacity)
 
@@ -54,8 +54,11 @@ struct SplashView: View {
                 Button {
                     // Trigger journey start logic in ViewModel
                   //  viewModel.startJourney()
+                    // Navigate to home view
+                    HapticManger.instance.impact(style: .medium)
+                    appState.route = .home
                 } label: {
-                    Text("استعد للعبور")
+                    Text("Start")
                         .font(.headline)
                         .foregroundStyle(.white)
                         .padding(.horizontal, 20)
@@ -97,8 +100,8 @@ struct SplashView: View {
 
 private let mockJourney = Journey(
     id: "preview",
-    title: "المدى الأحمر",
-    description: "ارتحل مع الرحلة عبر سكون الصحراء، حيث يقودك الغموض في رمالها إلى النور.",
+    title: "Red Horizon",
+    description: "Mystery in the desert, light at the end.",
     outline: "Some outline",
     subOutline: "Some subOutline",
     imageName: "RedSunMounten",

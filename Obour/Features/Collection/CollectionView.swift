@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct CollectionView: View {
-
+    @EnvironmentObject private var appState: AppState
     @StateObject private var collectionVM: CollectionViewModel
     @GestureState private var dragOffset = CGSize.zero
 
@@ -24,6 +24,8 @@ struct CollectionView: View {
                 // MARK: - Top bar
                 HStack {
                     Button {
+                        HapticManger.instance.impact(style: .medium)
+                        appState.route = .journeyV
                         // Back action handled by NavigationStack
                     } label: {
                         Image(systemName: "chevron.backward")
