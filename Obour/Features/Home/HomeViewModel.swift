@@ -1,3 +1,4 @@
+
 //
 //  HomeViewModel.swift
 //  Obour
@@ -132,4 +133,5 @@ static let preview: HomeViewModel = {
 #endif
 
 }
+
 
