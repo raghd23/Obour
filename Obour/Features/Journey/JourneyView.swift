@@ -289,6 +289,8 @@ private extension JourneyView {
             // Trigger journey start logic in ViewModel
             HapticManger.instance.impact(style: .medium)
             viewModel.startJourney()
+            // Navigate to the SpriteKit screen (DesertScene)
+            appState.route = .desertWalking(viewModel.journey)
         } label: {
             Text("Start Your Journey")
                 .font(.headline)

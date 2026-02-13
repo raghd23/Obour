@@ -1,16 +1,19 @@
 //
-//  DesertScene.swift
+//  DesertFireStoryView.swift
 //  Obour
 //
-//  Created by Raghad Alzemami on 15/08/1447 AH.
+//  Created by Raghad Alzemami on 25/08/1447 AH.
 //
+
 
 import SwiftUI
 import AVKit
 import AVFoundation
 
-struct TravellerStroySceneView: View {
-
+struct DesertFireStoryView: View {
+    @EnvironmentObject var appState: AppState
+    let journey: Journey
+    
     @State private var player: AVPlayer = {
         guard let url = Bundle.main.url(forResource: "fire", withExtension: "mp4") else {
             return AVPlayer()
@@ -20,12 +23,12 @@ struct TravellerStroySceneView: View {
         p.isMuted = true
         return p
     }()
-
+    
     @State private var narrationPlayer: AVAudioPlayer?
-
+    
     private func startNarration() {
         guard let url = Bundle.main.url(forResource: "Traveller story", withExtension: "wav") else {
-            print("Narration file not found: Traveller story.wav")
+            print("Narration file not found")
             return
         }
         do {
@@ -38,22 +41,22 @@ struct TravellerStroySceneView: View {
             print("Failed to start narration: \(error)")
         }
     }
-
+    
     private func stopNarration() {
         narrationPlayer?.stop()
         narrationPlayer = nil
     }
-
+    
     var body: some View {
         GeometryReader { geo in
             ZStack {
-                // 1) Background image
+                // Background
                 Image("backgroundScene")
                     .resizable()
                     .scaledToFill()
                     .ignoresSafeArea()
-
-                // 2) Fire video (above background)
+                
+                // Fire video
                 VideoPlayer(player: player)
                     .ignoresSafeArea()
                     .allowsHitTesting(false)
@@ -67,15 +70,25 @@ struct TravellerStroySceneView: View {
                     .blendMode(.lighten)
                     .position(x: geo.size.width * 0.45,
                               y: geo.size.height * 0.58)
-
-                // 3) Mountains image - positioned relative to fire
+                
+                // Mountains
                 Image("Mountain")
-                    //.resizable()
-                   // .scaledToFit()
+                //    .resizable()
                     .frame(width: geo.size.width)
                     .position(x: geo.size.width * 0.56,
-                              y: geo.size.height * 0.82) // adjust this percentage to move up/down
+                              y: geo.size.height * 0.82)
                     .allowsHitTesting(false)
+                
+                // ✅ Button to finish and go back
+//                VStack {
+//                    Spacer()
+//                    Button("Continue Journey") {
+//                        stopNarration()
+//                        appState.route = .collection // or .journeyOutro(journey)
+//                    }
+//                    .buttonStyle(.borderedProminent)
+//                    .padding(.bottom, 40)
+//                }
             }
             .ignoresSafeArea()
             .onAppear {
@@ -87,9 +100,4 @@ struct TravellerStroySceneView: View {
             }
         }
     }
-}
-
-
-#Preview {
-    TravellerStroySceneView()
 }

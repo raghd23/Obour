@@ -17,25 +17,29 @@ struct RootView: View {
         
         // Switches over the current navigation state
         switch appState.route {
-            
-        case .launch:
-            LaunchView()
+//            
+//        case .launch:
+//            LaunchView()
         case .splash:
             SplashView()
-            
-        case .onboarding:
-            OnboardingViewPlaceholder()
 
         case .home:
             HomeView()
+            
+//        case .journeyIntro(let journey):
+//            JourneyView(journey: journey)  // Red horizon screen
+            
+        case .desertWalking(let journey):
+            DesertExperienceView(journey: journey)  // SpriteKit walking
+            
+        case .desertFireStory(let journey):
+            DesertFireStoryView(journey: journey)
 
-        case .journey(let journey):
-            JourneyPlaceholderView(title: journey.title)
-
-        case .spriteKitSample:
-            NavigationStack {   // or keep your existing nav container
-                SpriteKitSampleScreen()
-            }
+//
+//        case .spriteKitSample:
+//            NavigationStack {   // or keep your existing nav container
+//                SpriteKitSampleScreen()
+//            }
 
         case .journeyV:
             JourneyView(journey: Journey(
@@ -84,18 +88,4 @@ struct RootView: View {
     }
 }
 
-// Temporary placeholders so the app compiles cleanly until you add real views.
-private struct OnboardingViewPlaceholder: View {
-    var body: some View {
-        Text("Onboarding Screen (to be implemented)")
-            .padding()
-    }
-}
 
-private struct JourneyPlaceholderView: View {
-    let title: String
-    var body: some View {
-        Text("Journey Screen for \(title) (to be implemented)")
-            .padding()
-    }
-}

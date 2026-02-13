@@ -11,11 +11,15 @@ final class AppState: ObservableObject {
 
     // Defines ALL possible navigation states of the app
     enum Route {
-        case launch
-        case onboarding
+//        case launch
+//        case onboarding
         case home
-        case journey(Journey)
-        case spriteKitSample 
+//        case journey(Journey)
+ //       case journeyIntro(Journey)        // Red horizon intro screen
+        case desertWalking(Journey)       // SpriteKit desert walking
+        case desertFireStory(Journey)     // Fire + narration scene
+      //  case journeyOutro(Journey)
+      //  case spriteKitSample
         case end
         case splash
         case journeyV
