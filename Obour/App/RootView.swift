@@ -29,6 +29,10 @@ struct RootView: View {
 
         case .journey(let journey):
             JourneyPlaceholderView(title: journey.title)
+        case .spriteKitSample:
+            NavigationStack {   // or keep your existing nav container
+                SpriteKitSampleScreen()
+            }
 
         case .end:
             EndView()

@@ -11,7 +11,7 @@ struct HomeView: View {
     @EnvironmentObject private var appState: AppState
 
     var body: some View {
-        NavigationStack {
+    
             List {
                 Section {
                     Button {
@@ -21,13 +21,11 @@ struct HomeView: View {
                     }
 
                     Button {
-                        // Enable and provide a Journey when ready:
-                        // let sample = Journey(id: UUID(), title: "Sample Journey")
-                        // appState.route = .journey(sample)
+                        appState.route = .spriteKitSample
                     } label: {
                         Label("Start Journey", systemImage: "figure.walk")
                     }
-                    .disabled(true) // Disabled until a Journey model instance is provided
+                    .disabled(false) // Disabled until a Journey model instance is provided
 
                     Button {
                         appState.route = .end
@@ -47,5 +45,5 @@ struct HomeView: View {
             }
             .navigationTitle("Home")
         }
-    }
+    
 }

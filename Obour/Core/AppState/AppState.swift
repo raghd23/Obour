@@ -15,6 +15,7 @@ final class AppState: ObservableObject {
         case onboarding
         case home
         case journey(Journey)
+        case spriteKitSample 
         case end
     }
     
