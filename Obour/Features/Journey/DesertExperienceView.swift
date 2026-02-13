@@ -12,22 +12,27 @@ struct DesertExperienceView: View {
     @EnvironmentObject var appState: AppState
     let journey: Journey
     
-    private var scene: DesertScene {
+    @State private var skView: SKView?
+    
+    private func makeScene() -> DesertScene {
         let s = (SKScene(fileNamed: "DesertScene") as? DesertScene) ?? DesertScene()
         s.scaleMode = .resizeFill
         
-        // ✅ When desert walking ends, go to fire story
         s.onReachEnd = {
+            // ✅ Pause SpriteKit before leaving
+            s.isPaused = true
             appState.route = .desertFireStory(journey)
         }
         return s
     }
     
     var body: some View {
-        ZStack {
-            SpriteView(scene: scene)
-                .ignoresSafeArea()
-        }
+        SpriteView(scene: makeScene())
+            .ignoresSafeArea()
+            .onDisappear {
+                // ✅ Clean up SpriteKit
+                makeScene().removeAllChildren()
+                makeScene().removeFromParent()
+            }
     }
 }
-

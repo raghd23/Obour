@@ -60,7 +60,9 @@ final class DesertScene: SKScene {
         size = view.bounds.size
         scaleMode = .resizeFill
         anchorPoint = .zero
-        view.ignoresSiblingOrder = false
+        view.ignoresSiblingOrder = true
+        view.shouldCullNonVisibleNodes = true
+        view.isAsynchronous = true
 
         guard
             let w = childNode(withName: "//world"),

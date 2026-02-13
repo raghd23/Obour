@@ -57,19 +57,10 @@ struct DesertFireStoryView: View {
                     .ignoresSafeArea()
                 
                 // Fire video
-                VideoPlayer(player: player)
-                    .ignoresSafeArea()
-                    .allowsHitTesting(false)
-                    .onAppear {
-                        player.play()
-                    }
-                    .onReceive(NotificationCenter.default.publisher(for: .AVPlayerItemDidPlayToEndTime)) { _ in
-                        player.seek(to: .zero)
-                        player.play()
-                    }
+                LoopingVideoView(videoName: "fire", videoType: "mp4")
+                    .frame(width: geo.size.width * 0.3, height: geo.size.height * 0.3) // ⬅️ Size it smaller!
+                    .position(x: geo.size.width * 0.45, y: geo.size.height * 0.58)
                     .blendMode(.lighten)
-                    .position(x: geo.size.width * 0.45,
-                              y: geo.size.height * 0.58)
                 
                 // Mountains
                 Image("Mountain")
