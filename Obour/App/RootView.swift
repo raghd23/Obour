@@ -20,7 +20,9 @@ struct RootView: View {
             
         case .launch:
             LaunchView()
-
+        case .splash:
+            SplashView()
+            
         case .onboarding:
             OnboardingViewPlaceholder()
 
@@ -29,10 +31,52 @@ struct RootView: View {
 
         case .journey(let journey):
             JourneyPlaceholderView(title: journey.title)
+
         case .spriteKitSample:
             NavigationStack {   // or keep your existing nav container
                 SpriteKitSampleScreen()
             }
+
+        case .journeyV:
+            JourneyView(journey: Journey(
+                id: "preview-journey",
+                title: "Red Horizon",
+                description: "Mystery in the desert, light at the end",
+                outline: "Some outline",
+                subOutline: "Some subOutline",
+                imageName: "RedSunMounten",
+                scenes: [],
+                items: [],
+                requiredItemIDs: [],
+                journeyRules: JourneyRules(
+                    softLimitSeconds: 480,
+                    hardLimitSeconds: 600,
+                    lostNoProgressSeconds: 120,
+                    graceVolumeMultiplier: 1.2,
+                    lostVolumeMultiplier: 1.6
+                )
+            )
+        )
+        case .collection:
+            CollectionView(journey: Journey(
+                id: "preview-journey",
+                title: "Experimental Journey",
+                description: "Used for preview only",
+                outline: nil,
+                subOutline: nil,
+                imageName: nil,
+                scenes: [],
+                items: [], // start empty
+                requiredItemIDs: [],
+                journeyRules: JourneyRules(
+                    softLimitSeconds: 0,
+                    hardLimitSeconds: 0,
+                    lostNoProgressSeconds: 0,
+                    graceVolumeMultiplier: 1,
+                    lostVolumeMultiplier: 1
+                )
+            )
+)
 
         case .end:
             EndView()

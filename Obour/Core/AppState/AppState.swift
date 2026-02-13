@@ -17,9 +17,12 @@ final class AppState: ObservableObject {
         case journey(Journey)
         case spriteKitSample 
         case end
+        case splash
+        case journeyV
+        case collection
     }
     
     // @Published notifies SwiftUI when the route changes
     // Default value is .launch when the app starts
-    @Published var route: Route = .launch
+    @Published var route: Route = .splash
 }
