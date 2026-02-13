@@ -39,8 +39,8 @@ struct JourneyView: View {
                 SoundManger.instance.playBackgroundMusic()
             }
         }
-        .onChange(of: isMuted) { muted in
-            if muted {
+        .onChange(of: isMuted) { oldValue, newValue in
+            if newValue {
                 SoundManger.instance.stopBackgroundMusic()
             } else {
                 SoundManger.instance.playBackgroundMusic()
@@ -345,4 +345,3 @@ private extension JourneyView {
     )
     .preferredColorScheme(.dark)
 }
-

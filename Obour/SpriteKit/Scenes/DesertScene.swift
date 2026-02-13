@@ -24,6 +24,8 @@ final class DesertScene: SKScene {
     private var tentNode: SKSpriteNode!
     private var fireNode: SKSpriteNode!
     private var moonNode: SKSpriteNode!
+    private var manNode: SKSpriteNode!
+    private var smokeNode: SKSpriteNode!
 
     // Camera
     private let cameraNode = SKCameraNode()
@@ -77,7 +79,9 @@ final class DesertScene: SKScene {
             let mts  = world.childNode(withName: "mountains")  as? SKSpriteNode,
             let tent = world.childNode(withName: "tent")       as? SKSpriteNode,
             let fire = world.childNode(withName: "fire")       as? SKSpriteNode,
-            let moon = hud.childNode(withName: "moon")         as? SKSpriteNode
+            let moon = hud.childNode(withName: "moon")         as? SKSpriteNode,
+            let man = world.childNode(withName: "man")         as? SKSpriteNode,
+            let smoke = world.childNode(withName: "smoke")         as? SKSpriteNode
         else { assertionFailure("Missing named sprites under world/hud"); return }
 
         backgroundNode = bg
@@ -85,6 +89,8 @@ final class DesertScene: SKScene {
         tentNode = tent
         fireNode = fire
         moonNode = moon
+        manNode = man
+        smokeNode = smoke
 
         // Camera
         camera = cameraNode
