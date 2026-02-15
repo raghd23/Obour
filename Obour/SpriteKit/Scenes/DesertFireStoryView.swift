@@ -5,7 +5,6 @@
 //  Created by Raghad Alzemami on 25/08/1447 AH.
 //
 
-
 import SwiftUI
 import AVKit
 import AVFoundation
@@ -73,12 +72,17 @@ struct DesertFireStoryView: View {
                 // ✅ Button to finish and go back
                 VStack {
                     Spacer()
-                    Button("skip") {
+                    Button("Skip") {
                         stopNarration()
                         appState.route = .nightExploration(journey) // or .journeyOutro(journey)
                     }
-//                    .buttonStyle(.borderedProminent)
-                    .padding(.bottom, 40)
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 9)
+                    .glassEffect(.clear)
+                    .padding()
+
                 }
             }
             .ignoresSafeArea()
@@ -91,4 +95,28 @@ struct DesertFireStoryView: View {
             }
         }
     }
+}
+
+#Preview {
+    // Sample Journey for preview
+    let previewJourney = Journey(
+        id: "preview-journey",
+        title: "Red Horizon",
+        description: "Mystery in the desert, light at the end",
+        outline: "Some outline",
+        subOutline: "Some subOutline",
+        imageName: "RedSunMounten",
+        scenes: [],
+        items: [],
+        requiredItemIDs: [],
+        journeyRules: JourneyRules(
+            softLimitSeconds: 480,
+            hardLimitSeconds: 600,
+            lostNoProgressSeconds: 120,
+            graceVolumeMultiplier: 1.2,
+            lostVolumeMultiplier: 1.6
+        )
+    )
+    return DesertFireStoryView(journey: previewJourney)
+        .environmentObject(AppState())
 }
