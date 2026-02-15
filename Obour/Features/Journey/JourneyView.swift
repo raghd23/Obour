@@ -174,7 +174,7 @@ private extension JourneyView {
                     .foregroundStyle(.white)
                     .background(
                         Circle()
-                            .glassEffect()
+                            .glassEffect(.clear)
                     )
             }
 

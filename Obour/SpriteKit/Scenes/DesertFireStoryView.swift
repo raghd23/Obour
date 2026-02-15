@@ -46,6 +46,13 @@ struct DesertFireStoryView: View {
         narrationPlayer = nil
     }
     
+    private func stopExperienceAndGoHome() {
+        player.pause()
+        stopNarration()
+        HapticManger.instance.impact(style: .medium)
+        appState.route = .home
+    }
+    
     var body: some View {
         GeometryReader { geo in
             ZStack {
@@ -57,32 +64,54 @@ struct DesertFireStoryView: View {
                 
                 // Fire video
                 LoopingVideoView(videoName: "fire", videoType: "mp4")
-                    .frame(width: geo.size.width * 0.3, height: geo.size.height * 0.3) // ⬅️ Size it smaller!
+                    .frame(width: geo.size.width * 0.3, height: geo.size.height * 0.3)
                     .position(x: geo.size.width * 0.45, y: geo.size.height * 0.58)
                     .blendMode(.lighten)
                 
                 // Mountains
                 Image("Mountain")
-                //    .resizable()
                     .frame(width: geo.size.width)
                     .position(x: geo.size.width * 0.56,
                               y: geo.size.height * 0.82)
                     .allowsHitTesting(false)
                 
-                // ✅ Button to finish and go back
+                // Top controls + bottom action
                 VStack {
+                    // Top-leading exit button (consistent with JourneyView style)
+                    HStack {
+                        Button {
+                            stopExperienceAndGoHome()
+                        } label: {
+                            Image(systemName: "xmark")
+                                .font(.system(size: 18, weight: .medium))
+                                .frame(width: 44, height: 44)
+                                .foregroundStyle(.white)
+                                .background(
+                                    Circle()
+                                        .glassEffect(.clear)
+                                )
+                        }
+                        .accessibilityLabel("Exit to Home")
+                        .padding(.leading, 24)
+                        .padding(.top, 60)
+                        
+                        Spacer()
+                    }.foregroundStyle(.black)
+                    
                     Spacer()
+                    
+                    // Bottom Skip button (existing)
                     Button("Skip") {
+                        HapticManger.instance.impact(style: .light)
                         stopNarration()
-                        appState.route = .nightExploration(journey) // or .journeyOutro(journey)
+                        appState.route = .nightExploration(journey)
                     }
                     .font(.headline)
                     .foregroundStyle(.white)
                     .padding(.horizontal, 20)
                     .padding(.vertical, 9)
                     .glassEffect(.clear)
-                    .padding()
-
+                    .padding(.bottom, 24)
                 }
             }
             .ignoresSafeArea()
