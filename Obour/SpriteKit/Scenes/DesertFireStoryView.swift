@@ -71,15 +71,15 @@ struct DesertFireStoryView: View {
                     .allowsHitTesting(false)
                 
                 // ✅ Button to finish and go back
-//                VStack {
-//                    Spacer()
-//                    Button("Continue Journey") {
-//                        stopNarration()
-//                        appState.route = .collection // or .journeyOutro(journey)
-//                    }
+                VStack {
+                    Spacer()
+                    Button("skip") {
+                        stopNarration()
+                        appState.route = .nightExploration(journey) // or .journeyOutro(journey)
+                    }
 //                    .buttonStyle(.borderedProminent)
-//                    .padding(.bottom, 40)
-//                }
+                    .padding(.bottom, 40)
+                }
             }
             .ignoresSafeArea()
             .onAppear {

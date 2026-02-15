@@ -18,6 +18,7 @@ final class AppState: ObservableObject {
  //       case journeyIntro(Journey)        // Red horizon intro screen
         case desertWalking(Journey)       // SpriteKit desert walking
         case desertFireStory(Journey)     // Fire + narration scene
+        case nightExploration(Journey)
       //  case journeyOutro(Journey)
       //  case spriteKitSample
         case end

@@ -34,6 +34,9 @@ struct RootView: View {
             
         case .desertFireStory(let journey):
             DesertFireStoryView(journey: journey)
+            
+        case .nightExploration(let journey):
+            NightExplorationView(journey: journey)
 
 //
 //        case .spriteKitSample:
