@@ -24,6 +24,7 @@ struct DesertFireStoryView: View {
     }()
     
     @State private var narrationPlayer: AVAudioPlayer?
+    @State private var narrationComplete = false  // ⬅️ Track if narration finished
     
     private func startNarration() {
         guard let url = Bundle.main.url(forResource: "Traveller story", withExtension: "wav") else {
@@ -36,6 +37,13 @@ struct DesertFireStoryView: View {
             audioPlayer.prepareToPlay()
             audioPlayer.play()
             narrationPlayer = audioPlayer
+            
+            // ✅ Mark narration as complete after 55 seconds
+            DispatchQueue.main.asyncAfter(deadline: .now() + 55) {
+                withAnimation {
+                    narrationComplete = true
+                }
+            }
         } catch {
             print("Failed to start narration: \(error)")
         }
@@ -71,13 +79,11 @@ struct DesertFireStoryView: View {
                 // Mountains
                 Image("Mountain")
                     .frame(width: geo.size.width)
-                    .position(x: geo.size.width * 0.56,
-                              y: geo.size.height * 0.82)
+                    .position(x: geo.size.width * 0.56, y: geo.size.height * 0.82)
                     .allowsHitTesting(false)
                 
-                // Top controls + bottom action
+                // ✅ Two buttons: Skip (always) + Continue (after narration)
                 VStack {
-                    // Top-leading exit button (consistent with JourneyView style)
                     HStack {
                         Button {
                             stopExperienceAndGoHome()
@@ -89,29 +95,61 @@ struct DesertFireStoryView: View {
                                 .background(
                                     Circle()
                                         .glassEffect(.clear)
-                                )
-                        }
+                                        )
+                                    }
                         .accessibilityLabel("Exit to Home")
                         .padding(.leading, 24)
                         .padding(.top, 60)
-                        
+                                           
                         Spacer()
-                    }.foregroundStyle(.black)
-                    
+                        }.foregroundStyle(.black)
+                                       
                     Spacer()
                     
-                    // Bottom Skip button (existing)
-                    Button("Skip") {
-                        HapticManger.instance.impact(style: .light)
-                        stopNarration()
-                        appState.route = .nightExploration(journey)
+                    HStack(spacing: 20) {
+                        // Skip button (always visible, secondary style)
+                        if !narrationComplete {
+                            Button("Skip") {
+                                stopNarration()
+                                SoundManger.instance.stopBackgroundMusic()
+                                appState.route = .nightExploration(journey)
+                            }
+                            .buttonStyle(.bordered)
+                            .tint(.black)
+                            .foregroundStyle(.white)
+                            .glassEffect(.clear)
+                        }
+                        
+                        // Continue button (appears after 55s, primary style)
+                        if narrationComplete {
+                            Button("Continue") {
+                                stopNarration()
+                                SoundManger.instance.stopBackgroundMusic()
+                                appState.route = .nightExploration(journey)
+                            }
+                           // .buttonStyle(.borderedProminent)
+                            .buttonStyle(.bordered)
+                            .foregroundStyle(.white)
+                            .background {
+                                Capsule()
+                                    .fill(
+                                        LinearGradient(
+                                            colors: [
+                                                Color(red: 0.75, green: 0.25, blue: 0.2),
+                                                 Color(red: 0.35, green: 0.12, blue: 0.1)
+                                             ],
+                                             startPoint: .leading,
+                                             endPoint: .trailing
+                                         )
+                                         .opacity(0.25)
+                                     )
+                                     .glassEffect(.clear)
+                             }
+                            .transition(.scale.combined(with: .opacity))
+                            //.glassEffect(.clear)
+                        }
                     }
-                    .font(.headline)
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 9)
-                    .glassEffect(.clear)
-                    .padding(.bottom, 24)
+                    .padding(.bottom, 40)
                 }
             }
             .ignoresSafeArea()
