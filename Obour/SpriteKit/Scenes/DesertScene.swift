@@ -79,7 +79,7 @@ final class DesertScene: SKScene {
             let mts  = world.childNode(withName: "mountains")  as? SKSpriteNode,
             let tent = world.childNode(withName: "tent")       as? SKSpriteNode,
             let fire = world.childNode(withName: "fire")       as? SKSpriteNode,
-            let moon = hud.childNode(withName: "moon")         as? SKSpriteNode,
+            let moon = world.childNode(withName: "moon") as? SKSpriteNode,
             let man = world.childNode(withName: "man")         as? SKSpriteNode,
             let smoke = world.childNode(withName: "smoke")         as? SKSpriteNode
         else { assertionFailure("Missing named sprites under world/hud"); return }
@@ -103,13 +103,13 @@ final class DesertScene: SKScene {
         hud.position = .zero
         hud.zPosition = 10_000
 
-        // Moon on camera (so it stays screen-fixed)
-        moonNode.removeFromParent()
-        cameraNode.addChild(moonNode)
-        moonNode.setScale(1.0)
-
-        // ✅ Correct “no margin” pin: uses moonNode.anchorPoint
-        pinMoonTopLeft_NoMargin()
+//        // Moon on camera (so it stays screen-fixed)
+//        moonNode.removeFromParent()
+//        cameraNode.addChild(moonNode)
+//        moonNode.setScale(1.0)
+//
+//        // ✅ Correct “no margin” pin: uses moonNode.anchorPoint
+//        pinMoonTopLeft_NoMargin()
 
         computeCameraBounds()
 
