@@ -7,6 +7,8 @@
 
 import SpriteKit
 import CoreMotion
+import SpriteKit
+
 final class NightExplorationScene: SKScene {
     
     // MARK: - Completion callback
@@ -17,11 +19,20 @@ final class NightExplorationScene: SKScene {
     private var planetsContainer: SKNode!
     private let cameraNode = SKCameraNode()
     
+    // ✅ Counter label
+    private var counterLabel: SKLabelNode!
+    
     // MARK: - Touch tracking
     private var isDraggingFlashlight = false
     
-    // MARK: - Scene bounds
+    // MARK: - Scene bounds & Journey
     private var sceneBounds: CGRect!
+    private var startY: CGFloat = 0
+    private var endY: CGFloat = 0
+    
+    // MARK: - Exploration tracking
+    private var planetsDiscovered: Set<String> = []  // ⬅️ Track discovered PLANETS
+    private let requiredPlanets = 3
     
     // MARK: - Setup
     override func didMove(to view: SKView) {
@@ -29,25 +40,31 @@ final class NightExplorationScene: SKScene {
         scaleMode = .resizeFill
         backgroundColor = .black
         
-        // ✅ Wider scene bounds to fit three planets
+        // ✅ BIGGER bounds - 5x height instead of 3x
+        startY = -size.height * 2.5
+        endY = size.height * 2.5
+        
         sceneBounds = CGRect(
-            x: -size.width * 1.5,      // ⬅️ Wider left
-            y: -size.height * 1.5,
-            width: size.width * 3,      // ⬅️ 3x width (not 2x)
-            height: size.height * 3
+            x: -size.width * 0.5,
+            y: startY,
+            width: size.width,
+            height: size.height * 5  // ⬅️ Was 3, now 5
         )
         
         setupCamera()
         setupPlanets()
         setupFlashlight()
+        setupCounterUI()
     }
-    
+
     private func setupCamera() {
         camera = cameraNode
         addChild(cameraNode)
-        cameraNode.position = .zero  // Start at center planet
+        
+        // ✅ Start lower so first planet is only partially visible
+        cameraNode.position = CGPoint(x: 0, y: startY + size.height / 2 - 150)
     }
-    
+
     private func setupFlashlight() {
         flashlight = SKSpriteNode(imageNamed: "flashlightImage")
         flashlight.zPosition = 100
@@ -55,34 +72,61 @@ final class NightExplorationScene: SKScene {
         flashlight.blendMode = .add
         flashlight.alpha = 0.9
         
-        flashlight.position = .zero
+        // ✅ Start lower (matching camera)
+        flashlight.position = CGPoint(x: 0, y: startY + size.height / 2 - 150)
         addChild(flashlight)
     }
 
     private func setupPlanets() {
         planetsContainer = SKNode()
-        planetsContainer.position = .zero
-        planetsContainer.zPosition = 1
+        planetsContainer.zPosition = 5
         addChild(planetsContainer)
         
         let planetImages = ["planet1", "planet2", "planet3"]
-        let spacing: CGFloat = 400  // ⬅️ Increased spacing
+        
+        // ✅ Adjusted positions for bigger world
+        let positions: [(x: CGFloat, y: CGFloat)] = [
+            (x: -80, y: -size.height * 1.2),   // First: starts half visible as clue
+            (x: 100, y: size.height * 0.8),    // Middle
+            (x: -60, y: size.height * 2.2)     // Last: fully visible when reached
+        ]
         
         for (index, imageName) in planetImages.enumerated() {
             let planet = SKSpriteNode(imageNamed: imageName)
-            planet.setScale(0.6)  // ⬅️ Slightly bigger
+            planet.setScale(0.6)
             planet.name = "planet\(index + 1)"
-            
-            // Position: -700, 0, 700
             planet.position = CGPoint(
-                x: CGFloat(index - 1) * spacing,
-                y: 0
+                x: positions[index].x,
+                y: positions[index].y
             )
-            
+            planet.alpha = 0
             planetsContainer.addChild(planet)
             
-            print("Planet \(index + 1) at x: \(planet.position.x)")  // Debug
+            print("Planet \(index + 1) at y: \(planet.position.y)")
         }
+    }
+    
+    // ✅ Counter UI at top
+    private func setupCounterUI() {
+        counterLabel = SKLabelNode(fontNamed: "Arial-BoldMT")
+        counterLabel.text = "0/3"
+        counterLabel.fontSize = 24
+        counterLabel.fontColor = .white
+        counterLabel.zPosition = 200
+        
+        cameraNode.addChild(counterLabel)
+        counterLabel.position = CGPoint(x: 0, y: size.height / 2 - 80)
+    }
+    
+    // ✅ Update counter display
+    private func updateCounter() {
+        counterLabel.text = "\(planetsDiscovered.count)/\(requiredPlanets)"
+        
+        let pulse = SKAction.sequence([
+            .scale(to: 1.3, duration: 0.1),
+            .scale(to: 1.0, duration: 0.1)
+        ])
+        counterLabel.run(pulse)
     }
     
     // MARK: - Touch Handling
@@ -99,11 +143,7 @@ final class NightExplorationScene: SKScene {
         guard let touch = touches.first, isDraggingFlashlight else { return }
         
         let location = touch.location(in: self)
-        
-        // ✅ Move flashlight directly
         flashlight.position = location
-        
-        // ✅ Smooth camera follow
         updateCameraPosition()
     }
     
@@ -111,13 +151,11 @@ final class NightExplorationScene: SKScene {
         let targetX = flashlight.position.x
         let targetY = flashlight.position.y
         
-        // ✅ Smooth lerp (slower movement)
-        let lerpFactor: CGFloat = 0.08  // ⬅️ Lower = slower (was instant before)
+        let lerpFactor: CGFloat = 0.08
         
         cameraNode.position.x += (targetX - cameraNode.position.x) * lerpFactor
         cameraNode.position.y += (targetY - cameraNode.position.y) * lerpFactor
         
-        // Clamp camera to scene bounds
         let halfScreenWidth = size.width / 2
         let halfScreenHeight = size.height / 2
         
@@ -135,9 +173,7 @@ final class NightExplorationScene: SKScene {
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         isDraggingFlashlight = false
         
-        // Snap flashlight back to camera center
         let targetPosition = cameraNode.position
-        
         let snapBack = SKAction.move(to: targetPosition, duration: 0.3)
         snapBack.timingMode = .easeOut
         flashlight.run(snapBack)
@@ -149,93 +185,84 @@ final class NightExplorationScene: SKScene {
     
     // MARK: - Update Loop
     override func update(_ currentTime: TimeInterval) {
-        // Smooth camera follow
         if isDraggingFlashlight {
             updateCameraPosition()
         }
-    }
-//
-//## Key Fixes:
-//
-//✅ **Three planets visible** - Increased scene width from 2x to 3x
-//✅ **Better planet spacing** - 700 units apart (was 600)
-//✅ **Slower, smoother movement** - Added lerp with `0.08` factor
-//✅ **No stars** - Removed `addStarsParticles()`
-//✅ **Bigger planets** - Scale 0.6 (was 0.5)
-//
-//## Movement Speed Options:
-//
-//Change `lerpFactor` to adjust feel:
-//- `0.05` = Very slow, cinematic
-//- `0.08` = Smooth, controlled (current)
-//- `0.15` = Faster, responsive
-//- `1.0` = Instant (like before)
-//
-//**Debug:** Check the console for planet positions when the scene loads. You should see:
-//```
-//Planet 1 at x: -700.0
-//Planet 2 at x: 0.0
-//Planet 3 at x: 700.0
-    
-    /*
-    // TODO: Plants setup
-    private func setupPlants() {
-        plantsContainer = SKNode()
-        addChild(plantsContainer)
-        
-        let plantPositions: [(CGPoint, String)] = [
-            (CGPoint(x: -800, y: 200), "plant-1-1"),
-            (CGPoint(x: -600, y: -150), "plant-1-2"),
-            (CGPoint(x: 0, y: 250), "plant-2-1"),
-            (CGPoint(x: 600, y: 150), "plant-3-1"),
-        ]
-        
-        for (position, id) in plantPositions {
-            createPlant(at: position, id: id)
-        }
+        revealPlanets()
+        checkPlanetDiscovery()  // ⬅️ Check if flashlight discovers planets
     }
     
-    private func createPlant(at position: CGPoint, id: String) {
-        let plant = SKSpriteNode(imageNamed: "item1")
-        plant.position = position
-        plant.setScale(0.4)
-        plant.zPosition = 10
-        plant.name = id
-        plant.alpha = 0  // Hidden until revealed by flashlight
+    // ✅ Reveal planets when flashlight is near
+    private func revealPlanets() {
+        let flashlightPos = flashlight.position
         
-        let glow = SKSpriteNode(color: .green, size: CGSize(width: 40, height: 40))
-        glow.alpha = 0
-        glow.zPosition = -1
-        plant.addChild(glow)
-        
-        plantsContainer.addChild(plant)
-    }
-    
-    // TODO: Reveal logic
-    private func revealNearbyPlants() {
-        let flashlightWorldPos = cameraNode.convert(flashlight.position, to: self)
-        
-        plantsContainer.children.forEach { node in
-            guard let plant = node as? SKSpriteNode else { return }
+        planetsContainer.children.forEach { node in
+            guard let planet = node as? SKSpriteNode else { return }
             
             let distance = hypot(
-                plant.position.x - flashlightWorldPos.x,
-                plant.position.y - flashlightWorldPos.y
+                planet.position.x - flashlightPos.x,
+                planet.position.y - flashlightPos.y
             )
             
-            if distance < 150 {
-                plant.alpha = 1
-                plant.children.first?.alpha = 0.3
+            if distance < 450 {
+                planet.alpha = 1
             } else {
-                plant.alpha = max(0, 1 - (distance / 250))
-                plant.children.first?.alpha = 0
+                planet.alpha = max(0, 1 - (distance / 400))
             }
         }
     }
     
-    // TODO: Collection logic
+    // ✅ Check if flashlight encounters a planet
+    private func checkPlanetDiscovery() {
+        let flashlightPos = flashlight.position
+        
+        planetsContainer.children.forEach { node in
+            guard let planet = node as? SKSpriteNode,
+                  let planetID = planet.name,
+                  !planetsDiscovered.contains(planetID) else { return }
+            
+            let distance = hypot(
+                planet.position.x - flashlightPos.x,
+                planet.position.y - flashlightPos.y
+            )
+            
+            // ✅ When flashlight gets close to planet, count as discovered
+            if distance < 200 {
+                discoverPlanet(planetID)
+            }
+        }
+    }
+    
+    // ✅ Planet discovered!
+    private func discoverPlanet(_ planetID: String) {
+        planetsDiscovered.insert(planetID)
+        
+        HapticManger.instance.impact(style: .medium)
+        SoundManger.instance.playSound(sound: .card)
+        
+        updateCounter()
+        
+        print("✅ Discovered: \(planetID). Counter: \(planetsDiscovered.count)/\(requiredPlanets)")
+        
+        // ✅ Complete when all 3 planets discovered
+        if planetsDiscovered.count >= requiredPlanets {
+            completeExploration()
+        }
+    }
+    
+    private func completeExploration() {
+        isDraggingFlashlight = false
+        print("🎉 All planets discovered! Navigating to JourneyView...")
+        
+        let fadeOut = SKAction.fadeOut(withDuration: 1.0)
+        run(fadeOut) {
+            self.onComplete?()
+        }
+    }
+
+    /*
+    // TODO: OLD Collection Logic (commented out)
     private var itemsCollected: [String] = []
-    private let requiredItems = 9
     
     private func checkPlantCollection(at location: CGPoint) {
         let nodes = self.nodes(at: location)
@@ -263,12 +290,6 @@ final class NightExplorationScene: SKScene {
             completeExploration()
         }
     }
-    
-    private func completeExploration() {
-        let fadeOut = SKAction.fadeOut(withDuration: 1.0)
-        run(fadeOut) {
-            self.onComplete?()
-        }
-    }
     */
 }
+

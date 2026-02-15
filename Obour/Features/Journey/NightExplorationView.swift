@@ -17,8 +17,9 @@ struct NightExplorationView: View {
         scene.size = UIScreen.main.bounds.size
         scene.scaleMode = .resizeFill
         
+        // ✅ Navigate back to JourneyView when complete
         scene.onComplete = {
-            appState.route = .collection
+            appState.route = .journeyV
         }
         
         return scene

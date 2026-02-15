@@ -108,7 +108,7 @@ private extension JourneyView {
                     .font(.system(size: 18, weight: .medium))
                     .frame(width: 44, height: 44)
                     .foregroundStyle(.white)
-                    .background(Circle().glassEffect())
+                    .background(Circle().glassEffect(.clear))
             }
 
             Spacer()
