@@ -14,7 +14,7 @@ final class DesertScene: SKScene {
     var onReachEnd: (() -> Void)?
 
     enum ControlMode { case holdToMove, tiltToMove, autoScroll }
-    private var controlMode: ControlMode = .holdToMove
+    private var controlMode: ControlMode = .autoScroll
 
     // Nodes (from .sks)
     private var world: SKNode!
