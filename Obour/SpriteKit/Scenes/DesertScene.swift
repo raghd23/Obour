@@ -114,11 +114,14 @@ final class DesertScene: SKScene {
         computeCameraBounds()
 
         if controlMode == .tiltToMove { startMotion() }
+        
+        // ✅ Play background music for the desert scene
+        SoundManger.instance.playBackgroundMusic()
     }
 
     override func willMove(from view: SKView) {
         stopMotion()
-        stopMusic()
+        SoundManger.instance.stopBackgroundMusic()
     }
 
     override func update(_ currentTime: TimeInterval) {
