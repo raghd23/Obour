@@ -5,7 +5,6 @@
 //  Created by Raghad Alzemami on 25/08/1447 AH.
 //
 
-
 import SwiftUI
 import AVKit
 import AVFoundation
@@ -47,6 +46,13 @@ struct DesertFireStoryView: View {
         narrationPlayer = nil
     }
     
+    private func stopExperienceAndGoHome() {
+        player.pause()
+        stopNarration()
+        HapticManger.instance.impact(style: .medium)
+        appState.route = .home
+    }
+    
     var body: some View {
         GeometryReader { geo in
             ZStack {
@@ -58,28 +64,55 @@ struct DesertFireStoryView: View {
                 
                 // Fire video
                 LoopingVideoView(videoName: "fire", videoType: "mp4")
-                    .frame(width: geo.size.width * 0.3, height: geo.size.height * 0.3) // ⬅️ Size it smaller!
+                    .frame(width: geo.size.width * 0.3, height: geo.size.height * 0.3)
                     .position(x: geo.size.width * 0.45, y: geo.size.height * 0.58)
                     .blendMode(.lighten)
                 
                 // Mountains
                 Image("Mountain")
-                //    .resizable()
                     .frame(width: geo.size.width)
                     .position(x: geo.size.width * 0.56,
                               y: geo.size.height * 0.82)
                     .allowsHitTesting(false)
                 
-                // ✅ Button to finish and go back
-//                VStack {
-//                    Spacer()
-//                    Button("Continue Journey") {
-//                        stopNarration()
-//                        appState.route = .collection // or .journeyOutro(journey)
-//                    }
-//                    .buttonStyle(.borderedProminent)
-//                    .padding(.bottom, 40)
-//                }
+                // Top controls + bottom action
+                VStack {
+                    // Top-leading exit button (consistent with JourneyView style)
+                    HStack {
+                        Button {
+                            stopExperienceAndGoHome()
+                        } label: {
+                            Image(systemName: "xmark")
+                                .font(.system(size: 18, weight: .medium))
+                                .frame(width: 44, height: 44)
+                                .foregroundStyle(.white)
+                                .background(
+                                    Circle()
+                                        .glassEffect(.clear)
+                                )
+                        }
+                        .accessibilityLabel("Exit to Home")
+                        .padding(.leading, 24)
+                        .padding(.top, 60)
+                        
+                        Spacer()
+                    }.foregroundStyle(.black)
+                    
+                    Spacer()
+                    
+                    // Bottom Skip button (existing)
+                    Button("Skip") {
+                        HapticManger.instance.impact(style: .light)
+                        stopNarration()
+                        appState.route = .nightExploration(journey)
+                    }
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 9)
+                    .glassEffect(.clear)
+                    .padding(.bottom, 24)
+                }
             }
             .ignoresSafeArea()
             .onAppear {
@@ -91,4 +124,28 @@ struct DesertFireStoryView: View {
             }
         }
     }
+}
+
+#Preview {
+    // Sample Journey for preview
+    let previewJourney = Journey(
+        id: "preview-journey",
+        title: "Red Horizon",
+        description: "Mystery in the desert, light at the end",
+        outline: "Some outline",
+        subOutline: "Some subOutline",
+        imageName: "RedSunMounten",
+        scenes: [],
+        items: [],
+        requiredItemIDs: [],
+        journeyRules: JourneyRules(
+            softLimitSeconds: 480,
+            hardLimitSeconds: 600,
+            lostNoProgressSeconds: 120,
+            graceVolumeMultiplier: 1.2,
+            lostVolumeMultiplier: 1.6
+        )
+    )
+    return DesertFireStoryView(journey: previewJourney)
+        .environmentObject(AppState())
 }
