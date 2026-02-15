@@ -42,3 +42,8 @@ struct LaunchView: View {
         }
     }
 }
+
+#Preview {
+    LaunchView()
+        .environmentObject(AppState())
+}
