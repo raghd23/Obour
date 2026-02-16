@@ -10,7 +10,6 @@ import SwiftUI
 struct CollectItemsSheet: View {
 
     @Binding var isPresented: Bool
-    @State private var offset: CGFloat = 0
 
     var body: some View {
         ZStack {
@@ -18,63 +17,42 @@ struct CollectItemsSheet: View {
                 .ignoresSafeArea()
 
             VStack(spacing: 32) {
-
                 Spacer()
-                
                 
                 ZStack {
                     Image("OrangeCircle")
                         .resizable()
                         .scaleEffect(1.2)
                         .scaledToFit()
-                        .frame(width: 260) // adjust size if needed
+                        .frame(width: 260)
 
                     Image(systemName: "airpods.gen3")
                         .font(.system(size: 80))
                         .foregroundStyle(.white)
                 }
 
-
-                Text("لتكتمل الحكاية.. ضع سماعاتك وانطلق.")
+                Text("To complete your experience\nplace your headphones and start")
                     .foregroundStyle(.white)
                     .multilineTextAlignment(.center)
 
                 Spacer()
 
-                VStack(spacing: 8) {
-                    Text("ارفع الشاشة للبدء")
+                VStack(spacing: 16) {
+                    Text("Swipe Up")
                         .foregroundStyle(.white)
 
-                    Image(systemName: "chevron.down.2")
+                    Image(systemName: "chevron.up.2")
                         .foregroundStyle(.white)
                 }
-
+                .padding(.bottom, 30)
             }
             .padding()
         }
-        .offset(y: offset)
-        .gesture(
-            DragGesture()
-                .onChanged { value in
-                    if value.translation.height < 0 {
-                        offset = value.translation.height
-                    }
-                }
-                .onEnded { value in
-                    if value.translation.height < -120 {
-                        withAnimation(.easeInOut) {
-                            isPresented = false
-                        }
-                    } else {
-                        withAnimation(.spring()) {
-                            offset = 0
-                        }
-                    }
-                }
-        )
-        .animation(.easeInOut, value: offset)
+        .transition(.move(edge: .bottom).combined(with: .opacity))
+        .zIndex(1)
     }
 }
+
 #Preview {
     PreviewWrapper()
 }
@@ -86,17 +64,3 @@ private struct PreviewWrapper: View {
         CollectItemsSheet(isPresented: $showSheet)
     }
 }
-
-
-
-// MARK: - Collect Items Sheet (Temporary - Do Not Remove)
-// @State private var showSheet = true
-
-    /*
-    if showSheet {
-        CollectItemsSheet(isPresented: $showSheet)
-            .transition(.move(edge: .bottom))
-            .zIndex(1)
-    }
-    */
-
