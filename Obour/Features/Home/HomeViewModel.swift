@@ -18,10 +18,14 @@ class HomeViewModel: ObservableObject {
     @Published var journeys: [Journey] = []
     
     // MARK: - Initializer
-    init(catalog: JourneyCatalog? = nil) {
-        if let catalog = catalog {
-            journeys = catalog.journeys
-        }
+//    init(catalog: JourneyCatalog? = nil) {
+//        if let catalog = catalog {
+//            journeys = catalog.journeys
+//        }
+//        currentJourney = journeys.first
+//    }
+    init(catalog: JourneyCatalog = JourneyCatalog()) {
+        journeys = catalog.journeys
         currentJourney = journeys.first
     }
     

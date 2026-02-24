@@ -19,7 +19,7 @@ struct NightExplorationView: View {
         
         // ✅ Navigate back to JourneyView when complete
         scene.onComplete = {
-            appState.route = .journeyV
+            appState.route = .collection(journey)
         }
         
         return scene

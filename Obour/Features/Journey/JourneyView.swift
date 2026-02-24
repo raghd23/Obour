@@ -163,7 +163,7 @@ private extension JourneyView {
 
                 Button {
                     HapticManger.instance.impact(style: .medium)
-                    appState.route = .collection
+                    appState.route = .collection(viewModel.journey)
                 } label: {
                     Image(systemName: "rectangle.portrait.on.rectangle.portrait.angled.fill")
                         .font(.system(size: 18, weight: .medium))

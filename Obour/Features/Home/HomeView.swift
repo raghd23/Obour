@@ -17,7 +17,8 @@ struct HomeView: View {
         _homeVM = StateObject(wrappedValue: HomeViewModel())
         #endif
     }
-
+//    @StateObject private var homeVM = HomeViewModel()
+    
     @GestureState private var dragOffset = CGSize.zero
 
     var body: some View {
