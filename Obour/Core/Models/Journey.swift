@@ -58,9 +58,9 @@ extension Journey {
     static let desertJourney = Journey(
         id: "desert-red-horizon",
         title: "Red Horizon",
-        description: "Mystery in the desert, light at the end.",
-        outline: "Red",
-        subOutline: "Horizon",
+        description: String(localized:"A journey that takes you from the tales of travelers and the stillness of the sands to exploring the secrets of desert plants and collecting their treasures."),
+        outline: String(localized:"Red"),
+        subOutline: String(localized:"Horizon"),
         imageName: "RedSunMounten",
         scenes: [
             JourneyScene(
