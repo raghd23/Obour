@@ -8,7 +8,6 @@ import SwiftUI
 
 struct CollectionView: View {
     @EnvironmentObject private var appState: AppState
-    @GestureState private var dragOffset = CGSize.zero
 
     var body: some View {
         ZStack {
@@ -58,28 +57,20 @@ struct CollectionView: View {
                             .font(.caption)
                     }
                     .padding(.top, 8)
-                    .padding(.bottom, 50)
                 }
-                
-                // MARK: - Stacked item cards OR empty placeholder
-                ZStack {
-                    if discoveredItems.isEmpty {
-                        EmptyCollectionView()
-                            .padding(.top, 150)
-                    } else {
-                        ForEach(Array(discoveredItems.enumerated()), id: \.1.id) { index, item in
-                            ItemCardView(item: item)
-                                .offset(y: -CGFloat(index) * 36)
-                                .zIndex(Double(discoveredItems.count - index))
-                                .gesture(
-                                    DragGesture(minimumDistance: 20)
-                                        .updating($dragOffset) { value, state, _ in
-                                            if abs(value.translation.height) > 20 && index == 0 {
-                                                state = value.translation
-                                            }
-                                        }
-                                )
+                // MARK: - Scrollable item cards OR empty placeholder
+                if discoveredItems.isEmpty {
+                    EmptyCollectionView()
+                        .padding(.top, 150)
+                } else {
+                    ScrollView {
+                        VStack(spacing: 50) {
+                            ForEach(discoveredItems) { item in
+                                ItemCardView(item: item)
+                            }
                         }
+                        .padding(.top, 20)
+                        .padding(.bottom, 40)
                     }
                 }
                 
