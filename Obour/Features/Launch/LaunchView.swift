@@ -38,7 +38,7 @@ struct LaunchView: View {
             // Simulate loading work; replace with real initialization if needed
             try? await Task.sleep(nanoseconds: 1_200_000_000)
             // Navigate to home when ready
-            appState.route = .home
+            appState.route = .journeyV
         }
     }
 }

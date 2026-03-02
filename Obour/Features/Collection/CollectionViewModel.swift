@@ -15,8 +15,8 @@ final class CollectionViewModel: ObservableObject {
     private let collectedItemsKey = "CollectedItemsKey"
 
     // MARK: - Published UI state
-    @Published private(set) var items: [Items]
-    @Published var currentItem: Items?
+    @Published private(set) var items: [Item]
+    @Published var currentItem: Item?
 
     // MARK: - Init
     init(journey: Journey) {
@@ -28,7 +28,7 @@ final class CollectionViewModel: ObservableObject {
     }
     
     // MARK: - Add an item when triggered by scene
-    func addItem(_ item: Items) {
+    func addItem(_ item: Item) {
         guard !items.contains(where: { $0.id == item.id }) else { return }
         items.append(item)
         currentItem = items.first
@@ -60,7 +60,7 @@ final class CollectionViewModel: ObservableObject {
     }
 
     // MARK: - Placeholder for future item interaction
-    func didSelectItem(_ item: Items) {
+    func didSelectItem(_ item: Item) {
         // TODO: Hook item detail / encyclopedia / AR / sound later
     }
     func curtainShowItem(byID id: String) {

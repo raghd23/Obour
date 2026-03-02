@@ -5,20 +5,13 @@
 //  Created by Raghad Alzemami on 15/08/1447 AH.
 //
 
-import Observation
+import Foundation
+import Combine
 
-@Observable
-final class JourneyViewModel {
-
-    let journey: Journey
-    var hasStarted: Bool = false
-
-    init(journey: Journey) {
-        self.journey = journey
-    }
-
+final class JourneyViewModel: ObservableObject {
+    weak var appState: AppState?
+    
     func startJourney() {
-        hasStarted = true
+        print("🚀 Starting journey: \(appState?.journey.title ?? "Unknown")")
     }
 }
-

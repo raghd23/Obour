@@ -7,6 +7,7 @@
 
 import SwiftUI
 import AVKit
+import Combine
 
 struct JourneyView: View {
     @State private var showCollectItemsView = false
@@ -14,16 +15,17 @@ struct JourneyView: View {
 
     @EnvironmentObject var appState: AppState
     @State private var isMuted: Bool = false
-    @State private var viewModel: JourneyViewModel
+    @StateObject private var viewModel: JourneyViewModel
 
-    init(journey: Journey) {
-        _viewModel = State(initialValue: JourneyViewModel(journey: journey))
+    // ✅ No longer needs journey parameter - gets from AppState
+    init() {
+        _viewModel = StateObject(wrappedValue: JourneyViewModel())
     }
 
     var body: some View {
         ZStack {
-            Color.black // <<< ensures fade goes to black
-                    .ignoresSafeArea()
+            Color.black
+                .ignoresSafeArea()
             background
                 .opacity(fadeOut ? 0 : 1)
 
@@ -31,9 +33,9 @@ struct JourneyView: View {
                 .opacity(fadeOut ? 0 : 1)
 
             if showCollectItemsView {
-                Color.black.opacity(0.3) // dim background
-                        .ignoresSafeArea()
-                        .transition(.opacity)
+                Color.black.opacity(0.3)
+                    .ignoresSafeArea()
+                    .transition(.opacity)
                 CollectItemsSheet(isPresented: $showCollectItemsView)
                     .gesture(
                         DragGesture()
@@ -51,17 +53,17 @@ struct JourneyView: View {
         .ignoresSafeArea()
         .onChange(of: showCollectItemsView) { newValue in
             if !newValue {
-                // Fade out entire view smoothly
                 withAnimation(.easeInOut(duration: 0.3)) {
                     fadeOut = true
                 }
-                // Navigate after fade
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    appState.route = .desertWalking(viewModel.journey)
+                    appState.route = .desertWalking
                 }
             }
         }
         .onAppear {
+            // ✅ Pass AppState to viewModel
+            viewModel.appState = appState
             if !isMuted { SoundManger.instance.playBackgroundMusic() }
         }
         .onChange(of: isMuted) { _, newValue in
@@ -100,16 +102,16 @@ private extension JourneyView {
 
     var topControls: some View {
         HStack {
-            Button {
-                HapticManger.instance.impact(style: .medium)
-                appState.route = .home
-            } label: {
-                Image(systemName: "chevron.backward")
-                    .font(.system(size: 18, weight: .medium))
-                    .frame(width: 44, height: 44)
-                    .foregroundStyle(.white)
-                    .background(Circle().glassEffect(.clear))
-            }
+//            Button {
+//                HapticManger.instance.impact(style: .medium)
+//                appState.route = .journeyV
+//            } label: {
+//                Image(systemName: "chevron.backward")
+//                    .font(.system(size: 18, weight: .medium))
+//                    .frame(width: 44, height: 44)
+//                    .foregroundStyle(.white)
+//                    .background(Circle().glassEffect(.clear))
+//            }
 
             Spacer()
 
@@ -140,14 +142,21 @@ private extension JourneyView {
                         .font(.system(size: 40, weight: .bold))
                         .foregroundStyle(.white)
 
-                    Text("Red\nHorizon ")
+                    // ✅ Display journey info from AppState
+                    Text(appState.journey.outline ?? "Red")
+                        .font(.system(size: 48, weight: .bold))
+                        .foregroundStyle(.white)
+                        .multilineTextAlignment(.leading)
+                        .lineSpacing(-6)
+                    
+                    Text(appState.journey.subOutline ?? "Horizon")
                         .font(.system(size: 48, weight: .bold))
                         .foregroundStyle(.white)
                         .multilineTextAlignment(.leading)
                         .lineSpacing(-6)
                         .padding(.bottom, 8)
 
-                    Text("Mystery in the desert, light at the end.")
+                    Text(appState.journey.description)
                         .font(.system(size: 16, weight: .regular))
                         .foregroundStyle(.white.opacity(0.85))
                         .multilineTextAlignment(.leading)
@@ -161,6 +170,7 @@ private extension JourneyView {
             HStack {
                 startButton
 
+                // ✅ Collection button - no journey parameter needed
                 Button {
                     HapticManger.instance.impact(style: .medium)
                     appState.route = .collection
@@ -267,4 +277,3 @@ private extension JourneyView {
          player.play()
      }
  }
-

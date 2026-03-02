@@ -58,7 +58,7 @@ struct DesertFireStoryView: View {
         player.pause()
         stopNarration()
         HapticManger.instance.impact(style: .medium)
-        appState.route = .home
+        appState.route = .journeyV
     }
     
     var body: some View {
@@ -112,7 +112,7 @@ struct DesertFireStoryView: View {
                             Button("Skip") {
                                 stopNarration()
                                 SoundManger.instance.stopBackgroundMusic()
-                                appState.route = .nightExploration(journey)
+                                appState.route = .nightExploration
                             }
                             .buttonStyle(.bordered)
                             .tint(.black)
@@ -125,7 +125,7 @@ struct DesertFireStoryView: View {
                             Button("Continue") {
                                 stopNarration()
                                 SoundManger.instance.stopBackgroundMusic()
-                                appState.route = .nightExploration(journey)
+                                appState.route = .nightExploration
                             }
                            // .buttonStyle(.borderedProminent)
                             .buttonStyle(.bordered)
@@ -164,26 +164,26 @@ struct DesertFireStoryView: View {
     }
 }
 
-#Preview {
-    // Sample Journey for preview
-    let previewJourney = Journey(
-        id: "preview-journey",
-        title: "Red Horizon",
-        description: "Mystery in the desert, light at the end",
-        outline: "Some outline",
-        subOutline: "Some subOutline",
-        imageName: "RedSunMounten",
-        scenes: [],
-        items: [],
-        requiredItemIDs: [],
-        journeyRules: JourneyRules(
-            softLimitSeconds: 480,
-            hardLimitSeconds: 600,
-            lostNoProgressSeconds: 120,
-            graceVolumeMultiplier: 1.2,
-            lostVolumeMultiplier: 1.6
-        )
-    )
-    return DesertFireStoryView(journey: previewJourney)
-        .environmentObject(AppState())
-}
+//#Preview {
+//    // Sample Journey for preview
+//    let previewJourney = Journey(
+//        id: "preview-journey",
+//        title: "Red Horizon",
+//        description: "Mystery in the desert, light at the end",
+//        outline: "Some outline",
+//        subOutline: "Some subOutline",
+//        imageName: "RedSunMounten",
+//        scenes: [],
+//        items: [],
+//        requiredItemIDs: [],
+//        journeyRules: JourneyRules(
+//            softLimitSeconds: 480,
+//            hardLimitSeconds: 600,
+//            lostNoProgressSeconds: 120,
+//            graceVolumeMultiplier: 1.2,
+//            lostVolumeMultiplier: 1.6
+//        )
+//    )
+//    return DesertFireStoryView(journey: previewJourney)
+//        .environmentObject(AppState())
+//}

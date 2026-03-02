@@ -8,16 +8,10 @@ import SwiftUI
 
 struct CollectionView: View {
     @EnvironmentObject private var appState: AppState
-    @StateObject private var collectionVM: CollectionViewModel
     @GestureState private var dragOffset = CGSize.zero
-
-    init(journey: Journey) {
-        _collectionVM = StateObject(wrappedValue: CollectionViewModel(journey: journey))
-    }
 
     var body: some View {
         ZStack {
-            // Background (reuse Home gradient logic later if desired)
             Color.darkGray.ignoresSafeArea()
 
             VStack{
@@ -26,7 +20,6 @@ struct CollectionView: View {
                     Button {
                         HapticManger.instance.impact(style: .medium)
                         appState.route = .journeyV
-                        // Back action handled by NavigationStack
                     } label: {
                         Image(systemName: "chevron.backward")
                             .foregroundColor(.white)
@@ -39,7 +32,7 @@ struct CollectionView: View {
                     
                     Spacer()
                     
-                    Text("Journey Item")
+                    Text("Journey Items")
                         .foregroundColor(.white)
                         .font(.headline)
                         .padding(.trailing, 50)
@@ -47,8 +40,11 @@ struct CollectionView: View {
                     Spacer()
                 }
                 
-                if collectionVM.items.isEmpty{
-                    
+                // ✅ Get discovered items from AppState
+                let discoveredItems = appState.discoveredItems
+                
+                if discoveredItems.isEmpty {
+                    // Empty state will show below
                 } else {
                     HStack{
                         Text("Collections")
@@ -57,28 +53,24 @@ struct CollectionView: View {
                         
                         Spacer()
                         
-                        Text("\(collectionVM.items.count) / 2 items")
+                        Text(appState.discoveryProgress)
                             .foregroundColor(.white)
                             .font(.caption)
                     }
                     .padding(.top, 8)
                     .padding(.bottom, 50)
                 }
-                // MARK: - Stacked item cards
+                
                 // MARK: - Stacked item cards OR empty placeholder
                 ZStack {
-                    if collectionVM.items.isEmpty {
+                    if discoveredItems.isEmpty {
                         EmptyCollectionView()
                             .padding(.top, 150)
                     } else {
-                        ForEach(Array(collectionVM.items.enumerated()), id: \.1.id) { index, item in
+                        ForEach(Array(discoveredItems.enumerated()), id: \.1.id) { index, item in
                             ItemCardView(item: item)
                                 .offset(y: -CGFloat(index) * 36)
-                                .zIndex(Double(collectionVM.items.count - index))
-                                .onAppear {
-                                    // Placeholder curtain call
-                                    collectionVM.curtainShowItem(byID: item.id)
-                                }
+                                .zIndex(Double(discoveredItems.count - index))
                                 .gesture(
                                     DragGesture(minimumDistance: 20)
                                         .updating($dragOffset) { value, state, _ in
@@ -86,18 +78,10 @@ struct CollectionView: View {
                                                 state = value.translation
                                             }
                                         }
-                                        .onEnded { value in
-                                            if abs(value.translation.height) > 50 && index == 0 {
-                                                withAnimation(.spring()) {
-                                                    collectionVM.rotateItems()
-                                                }
-                                            }
-                                        }
                                 )
                         }
                     }
                 }
-                
                 
                 Spacer()
             }
@@ -106,40 +90,8 @@ struct CollectionView: View {
     }
 }
 
-//#Preview {
-//    CollectionView(journey: CollectionViewModel.preview.journey)
-//
-//}
-
 #Preview {
-    // Create a temporary Journey for preview
-    let previewJourney = Journey(
-        id: "preview-journey",
-        title: "Experimental Journey",
-        description: "Used for preview only",
-        outline: nil,
-        subOutline: nil,
-        imageName: nil,
-        scenes: [],
-        items: [], // start empty
-        requiredItemIDs: [],
-        journeyRules: JourneyRules(
-            softLimitSeconds: 0,
-            hardLimitSeconds: 0,
-            lostNoProgressSeconds: 0,
-            graceVolumeMultiplier: 1,
-            lostVolumeMultiplier: 1
-        )
-    )
-
-    // Create the ViewModel for preview
-    let previewVM = CollectionViewModel(journey: previewJourney)
-
-    // Add some items for preview
-    ItemData.allItems.prefix(2).forEach { previewVM.addItem($0) }
-
-    // Return the view
-    return CollectionView(journey: previewJourney)
-        .environmentObject(previewVM)
+    CollectionView()
+        .environmentObject(AppState())
 }
 
