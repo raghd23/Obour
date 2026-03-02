@@ -1,4 +1,3 @@
-
 //
 //  HomeViewModel.swift
 //  Obour
@@ -90,52 +89,48 @@ class HomeViewModel: ObservableObject {
         journeys.append(first)
         currentJourney = journeys.first
     }
-#if DEBUG
-static let preview: HomeViewModel = {
-    let vm = HomeViewModel()
-    vm.journeys = [
-        Journey(
-            id: "desert",
-            title: "Journey In The Sand",
-            description: "Mystery in the desert, light at the end",
-            outline: "Red Horizon",
-            subOutline: "10:00",
-            imageName: "DesertCard",
-            scenes: [],
-            items: [],
-            requiredItemIDs: [],
-            journeyRules: JourneyRules(
-                softLimitSeconds: 480,
-                hardLimitSeconds: 600,
-                lostNoProgressSeconds: 120,
-                graceVolumeMultiplier: 1.2,
-                lostVolumeMultiplier: 1.5
-            )
-        ),
-        Journey(
-            id: "sea",
-            title: "Journey In The Sea",
-            description: "Depth, waves, call of the see",
-            outline: "Blue Horizon",
-            subOutline: "12:00",
-            imageName: "seaCard",
-            scenes: [],
-            items: [],
-            requiredItemIDs: [],
-            journeyRules: JourneyRules(
-                softLimitSeconds: 600,
-                hardLimitSeconds: 720,
-                lostNoProgressSeconds: 150,
-                graceVolumeMultiplier: 1.1,
-                lostVolumeMultiplier: 1.4
-            )
-        )
-    ]
-    vm.currentJourney = vm.journeys.first
-    return vm
-}()
-#endif
-
 }
 
-
+#if DEBUG
+extension HomeViewModel {
+    static let preview: HomeViewModel = {
+        let vm = HomeViewModel()
+        vm.journeys = [
+            Journey(
+                id: "desert",
+                title: "Journey In The Sand",
+                description: "Mystery in the desert, light at the end",
+                outline: "Red Horizon",
+                subOutline: "10:00",
+                imageName: "DesertCard",
+                scenes: [],
+                journeyRules: JourneyRules(
+                    softLimitSeconds: 480,
+                    hardLimitSeconds: 600,
+                    lostNoProgressSeconds: 120,
+                    graceVolumeMultiplier: 1.2,
+                    lostVolumeMultiplier: 1.5
+                )
+            ),
+            Journey(
+                id: "sea",
+                title: "Journey In The Sea",
+                description: "Depth, waves, call of the see",
+                outline: "Blue Horizon",
+                subOutline: "12:00",
+                imageName: "seaCard",
+                scenes: [],
+                journeyRules: JourneyRules(
+                    softLimitSeconds: 600,
+                    hardLimitSeconds: 720,
+                    lostNoProgressSeconds: 150,
+                    graceVolumeMultiplier: 1.1,
+                    lostVolumeMultiplier: 1.4
+                )
+            )
+        ]
+        vm.currentJourney = vm.journeys.first
+        return vm
+    }()
+}
+#endif

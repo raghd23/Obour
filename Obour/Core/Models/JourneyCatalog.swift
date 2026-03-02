@@ -30,32 +30,12 @@ struct JourneyCatalog: Codable, Hashable {
             subOutline: "10:00",
             imageName: "DesertCard",
             scenes: [],
-            items: [],
-            requiredItemIDs: [],
             journeyRules: JourneyRules(
                 softLimitSeconds: 480,
                 hardLimitSeconds: 600,
                 lostNoProgressSeconds: 120,
                 graceVolumeMultiplier: 1.2,
                 lostVolumeMultiplier: 1.5
-            )
-        ),
-        Journey(
-            id: "sea",
-            title: "Journey In The Sea",
-            description: "Depth, waves, call of the sea",
-            outline: "Blue Horizon",
-            subOutline: "12:00",
-            imageName: "seaCard",
-            scenes: [],
-            items: [],
-            requiredItemIDs: [],
-            journeyRules: JourneyRules(
-                softLimitSeconds: 600,
-                hardLimitSeconds: 720,
-                lostNoProgressSeconds: 150,
-                graceVolumeMultiplier: 1.1,
-                lostVolumeMultiplier: 1.4
             )
         )
     ]

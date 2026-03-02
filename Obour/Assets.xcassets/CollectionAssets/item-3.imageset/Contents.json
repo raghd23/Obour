@@ -1,0 +1,22 @@
+{
+  "images" : [
+    {
+      "filename" : "CBiG2U8UUAAy-fg 1.jpg",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "CBiG2U8UUAAy-fg.jpg",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

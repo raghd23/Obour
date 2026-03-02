@@ -8,42 +8,55 @@
 import SwiftUI
 
 struct ItemCardView: View {
-
-    let item: Items
+    let item: Item  
 
     var body: some View {
         ZStack {
-            //Background Card
+            // Background Card
             ForEach(0..<15, id: \.self) { _ in
-                    Image("frameCard")
-                        .resizable()
-                        .scaledToFill()
-                }
-            
-            VStack{
-                Image(item.imageAsset)
+                Image("frameCard")
                     .resizable()
                     .scaledToFill()
-                    .frame(width: 355, height: 200)
-                    .clipShape(RoundedRectangle(cornerRadius: 18))
+            }
+            
+            VStack {
+                // Item image
+                if let imageName = item.imageName {
+                    Image(imageName)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 355, height: 200)
+                        .clipShape(RoundedRectangle(cornerRadius: 18))
+                } else {
+                    Image(systemName: "star.fill")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 60, height: 60)
+                        .foregroundColor(.yellow)
+                }
+                
+                // Item name
                 HStack {
                     Text(item.name)
                         .font(.headline)
                         .foregroundColor(.white)
                         .padding(.leading, 10)
                     Spacer()
-                    
                 }
-                HStack{
-                    Text(item.description)
+                
+                // Item description
+                HStack {
+                    Text(item.description ?? "")
                         .font(.caption)
                         .foregroundColor(.gray)
                         .lineLimit(5)
                         .padding(.leading, 10)
                     Spacer()
                 }
-                HStack{
-                    Image(systemName:"hazardsign.fill")
+                
+                // Badge (Not Poisonous)
+                HStack {
+                    Image(systemName: "hazardsign.fill")
                         .foregroundColor(Color.yellow)
                     
                     Text("Not Poisonous")

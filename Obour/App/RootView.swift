@@ -22,21 +22,29 @@ struct RootView: View {
 //            LaunchView()
         case .splash:
             SplashView()
-
-        case .home:
-            HomeView()
+//
+//        case .home:
+//            HomeView()
             
 //        case .journeyIntro(let journey):
 //            JourneyView(journey: journey)  // Red horizon screen
             
-        case .desertWalking(let journey):
-            DesertExperienceView(journey: journey)  // SpriteKit walking
+        case .nightExploration:
+            NightExplorationView()
+                .environmentObject(appState)
+        
+        case .collection:
+            CollectionView()
+                .environmentObject(appState)
             
-        case .desertFireStory(let journey):
-            DesertFireStoryView(journey: journey)
+        case .desertWalking:
+            DesertExperienceView(journey: appState.journey)  // SpriteKit walking
             
-        case .nightExploration(let journey):
-            NightExplorationView(journey: journey)
+        case .desertFireStory:
+            DesertFireStoryView(journey: appState.journey)
+            
+//        case .nightExploration(let journey):
+//            NightExplorationView(journey: journey)
 
 //
 //        case .spriteKitSample:
@@ -45,50 +53,10 @@ struct RootView: View {
 //            }
 
         case .journeyV:
-            JourneyView(journey: Journey(
-                id: "preview-journey",
-                title: "Red Horizon",
-                description: "Mystery in the desert, light at the end",
-                outline: "Some outline",
-                subOutline: "Some subOutline",
-                imageName: "RedSunMounten",
-                scenes: [],
-                items: [],
-                requiredItemIDs: [],
-                journeyRules: JourneyRules(
-                    softLimitSeconds: 480,
-                    hardLimitSeconds: 600,
-                    lostNoProgressSeconds: 120,
-                    graceVolumeMultiplier: 1.2,
-                    lostVolumeMultiplier: 1.6
-                )
-            )
-        )
-        case .collection:
-            CollectionView(journey: Journey(
-                id: "preview-journey",
-                title: "Experimental Journey",
-                description: "Used for preview only",
-                outline: nil,
-                subOutline: nil,
-                imageName: nil,
-                scenes: [],
-                items: [], // start empty
-                requiredItemIDs: [],
-                journeyRules: JourneyRules(
-                    softLimitSeconds: 0,
-                    hardLimitSeconds: 0,
-                    lostNoProgressSeconds: 0,
-                    graceVolumeMultiplier: 1,
-                    lostVolumeMultiplier: 1
-                )
-            )
-)
+            JourneyView()
 
         case .end:
             EndView()
         }
     }
 }
-
-

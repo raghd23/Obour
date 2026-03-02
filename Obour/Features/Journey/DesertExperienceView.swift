@@ -14,7 +14,7 @@ struct DesertExperienceView: View {
 
         s.onReachEnd = {
             s.isPaused = true
-            appState.route = .desertFireStory(journey)
+            appState.route = .desertFireStory
         }
 
         return s

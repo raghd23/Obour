@@ -4,27 +4,26 @@
 //
 //  Created by Deemah Alhazmi on 11/02/2026.
 
-
 import SwiftUI
 import AVKit
 
 struct SplashView: View {
     @EnvironmentObject var appState: AppState
-    @State private var isActive = false
     @State private var sunOpacity: Double = 0
-
 
     var body: some View {
         ZStack {
-
             Color(.black)
-            .ignoresSafeArea()
+                .ignoresSafeArea()
+
             // 🌌 Moving stars background
             LoopingVideoView(videoName: "starsMoving", videoType: "mov")
                 .ignoresSafeArea()
                 .opacity(0.2)
                 .blendMode(.lighten)
+
             Spacer()
+
             Image("Red")
                 .resizable()
                 .scaledToFit()
@@ -32,12 +31,9 @@ struct SplashView: View {
                 .opacity(sunOpacity)
                 .ignoresSafeArea()
 
-            
-
             // 🌅 Sun + Text
             VStack {
                 Spacer()
-
                     .padding(25)
 
                 Text("Where silence is heard")
@@ -51,53 +47,32 @@ struct SplashView: View {
 
                 Spacer()
                 
-                Button {
-                    // Trigger journey start logic in ViewModel
-                  //  viewModel.startJourney()
-                    // Navigate to home view
-                    HapticManger.instance.impact(style: .medium)
-                    appState.route = .home
-                } label: {
-                    Text("Start")
-                        .font(.headline)
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 9)
-                        .glassEffect(.clear)
-
-                }
-                .padding()
+                // Removed Start button for auto-dismiss
+                // Keeping bottom padding for layout balance
+                Color.clear.frame(height: 0)
+                    .padding()
             }
-
         }
         .onAppear {
+            // Fade in the sun/text
             withAnimation(.easeIn(duration: 1.5)) {
                 sunOpacity = 1
             }
-
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                isActive = true
+            // Automatically navigate after a short delay
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                HapticManger.instance.impact(style: .medium)
+                appState.route = .journeyV
             }
         }
-
-//        .onAppear {
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-//                isActive = true
-//            }
-//        }
-//        .fullScreenCover(isPresented: $isActive) {
-//            JourneyView(journey: mockJourney) // ✅ Fixed
-//        }
     }
 }
 
 #Preview {
     SplashView()
+        .environmentObject(AppState())
 }
 
-
 // MARK: - Mock Journey (used for splash navigation & preview)
-
 private let mockJourney = Journey(
     id: "preview",
     title: "Red Horizon",
@@ -106,8 +81,6 @@ private let mockJourney = Journey(
     subOutline: "Some subOutline",
     imageName: "RedSunMounten",
     scenes: [],
-    items: [],
-    requiredItemIDs: [],
     journeyRules: JourneyRules(
         softLimitSeconds: 480,
         hardLimitSeconds: 600,
