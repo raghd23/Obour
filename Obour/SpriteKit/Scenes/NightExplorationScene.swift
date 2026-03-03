@@ -4,6 +4,7 @@
 //
 //  Created by Raghad Alzemami on 27/08/1447 AH.
 //
+
 import SpriteKit
 import CoreMotion
 
@@ -19,7 +20,7 @@ final class NightExplorationScene: SKScene {
     private var flashlight: SKSpriteNode!
     private var planetsContainer: SKNode!
     private let cameraNode = SKCameraNode()
-    private var counterLabel: SKLabelNode!
+//    private var counterLabel: SKLabelNode!
     private var quitButton: SKNode!
     
     // MARK: - Touch tracking
@@ -36,6 +37,9 @@ final class NightExplorationScene: SKScene {
     
     // ✅ Map planet nodes to item IDs from ItemData
     private var planetItemMapping: [String: ItemID] = [:]
+    
+    // ✅ Track which planets are showing name+button (but not yet collected)
+    private var planetsShowingButton: Set<String> = []
     
     // MARK: - Setup
     override func didMove(to view: SKView) {
@@ -56,7 +60,7 @@ final class NightExplorationScene: SKScene {
         setupCamera()
         setupPlanets()
         setupFlashlight()
-        setupCounterUI()
+ //       setupCounterUI()
         setupQuitButton()
         showInstructions()
     }
@@ -94,7 +98,7 @@ final class NightExplorationScene: SKScene {
         
         for (index, imageName) in planetImages.enumerated() {
             let planet = SKSpriteNode(imageNamed: imageName)
-            planet.setScale(0.6)
+            planet.setScale(0.5)
             
             let planetID = "planet\(index + 1)"
             planet.name = planetID
@@ -113,24 +117,22 @@ final class NightExplorationScene: SKScene {
         }
     }
     
-    private func setupCounterUI() {
-        counterLabel = SKLabelNode(fontNamed: "Arial-BoldMT")
-        counterLabel.text = "0/3"
-        counterLabel.fontSize = 24
-        counterLabel.fontColor = .white
-        counterLabel.zPosition = 200
-        
-        cameraNode.addChild(counterLabel)
-        counterLabel.position = CGPoint(x: 0, y: size.height / 2 - 80)
-    }
+//    private func setupCounterUI() {
+//        counterLabel = SKLabelNode(fontNamed: "Arial-BoldMT")
+//        counterLabel.text = "0/3"
+//        counterLabel.fontSize = 24
+//        counterLabel.fontColor = .white
+//        counterLabel.zPosition = 200
+//        
+//        cameraNode.addChild(counterLabel)
+//        counterLabel.position = CGPoint(x: 0, y: size.height / 2 - 80)
+//    }
     
     private func setupQuitButton() {
-        // Container node
         let quitButtonContainer = SKNode()
         quitButtonContainer.name = "quitButton"
         quitButtonContainer.zPosition = 201
         
-        // ✅ Circular background using SKShapeNode
         let circle = SKShapeNode(circleOfRadius: 20)
         circle.fillColor = .gray.withAlphaComponent(0.1)
         circle.strokeColor = .white.withAlphaComponent(0.1)
@@ -139,7 +141,6 @@ final class NightExplorationScene: SKScene {
         circle.name = "quitButtonCircle"
         quitButtonContainer.addChild(circle)
         
-        // X label
         let xLabel = SKLabelNode(fontNamed: "Arial-BoldMT")
         xLabel.text = "✕"
         xLabel.fontSize = 20
@@ -149,17 +150,14 @@ final class NightExplorationScene: SKScene {
         xLabel.name = "quitButtonLabel"
         quitButtonContainer.addChild(xLabel)
         
-        // Larger touch area for easier tapping
         let touchArea = SKShapeNode(circleOfRadius: 35)
         touchArea.fillColor = .clear
         touchArea.strokeColor = .clear
         touchArea.name = "quitButtonTouchArea"
         quitButtonContainer.addChild(touchArea)
         
-        // Store reference for animations
         quitButton = quitButtonContainer
         
-        // Position in top-left corner
         cameraNode.addChild(quitButtonContainer)
         quitButtonContainer.position = CGPoint(x: -size.width / 2 + 40, y: size.height / 2 - 80)
     }
@@ -188,7 +186,7 @@ final class NightExplorationScene: SKScene {
         overlay.addChild(instruction1)
         
         let instruction2 = SKLabelNode(fontNamed: "Arial")
-        instruction2.text = "Find and collect 3 hidden plants"
+        instruction2.text = "Tap + to collect the 3 plants"
         instruction2.fontSize = 16
         instruction2.fontColor = .white
         instruction2.position = CGPoint(x: 0, y: 30)
@@ -216,40 +214,72 @@ final class NightExplorationScene: SKScene {
         cameraNode.addChild(overlay)
     }
     
-    private func updateCounter() {
-        counterLabel.text = "\(planetsDiscovered.count)/\(requiredPlanets)"
-        
-        let pulse = SKAction.sequence([
-            .scale(to: 1.3, duration: 0.1),
-            .scale(to: 1.0, duration: 0.1)
-        ])
-        counterLabel.run(pulse)
-    }
+//    private func updateCounter() {
+//        counterLabel.text = "\(planetsDiscovered.count)/\(requiredPlanets)"
+//        
+//        let pulse = SKAction.sequence([
+//            .scale(to: 1.3, duration: 0.1),
+//            .scale(to: 1.0, duration: 0.1)
+//        ])
+//        counterLabel.run(pulse)
+//    }
     
     // MARK: - Touch Handling
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
+        print("🟡 touchesBegan start")
         
-        // ✅ Dismiss instructions
+        if cameraNode.childNode(withName: "quitConfirmationOverlay") != nil {  print("🔴 blocked by quitConfirmation")
+            return }
+        
         if let overlay = cameraNode.childNode(withName: "instructionOverlay") {
-            overlay.run(.fadeOut(withDuration: 0.3)) {
-                overlay.removeFromParent()
-            }
+            overlay.run(.fadeOut(withDuration: 0.3)) { overlay.removeFromParent() }
+            print("🔴 blocked by instructions")
             return
         }
         
-        // ✅ Dismiss item preview on tap
         if let itemPreview = cameraNode.childNode(withName: "itemPreview") {
-            itemPreview.run(.fadeOut(withDuration: 0.2)) {
-                itemPreview.removeFromParent()
-            }
+            itemPreview.run(.fadeOut(withDuration: 0.2)) { itemPreview.removeFromParent() }
+            print("🔴 blocked by itemPreview")
             return
         }
         
         let nodesAtPoint = nodes(at: location)
+        print("🔍 Nodes at point: \(nodesAtPoint.map { $0.name ?? "unnamed" })")
+        
+        // Plus button tapped directly
+        if nodesAtPoint.contains(where: { $0.name?.hasPrefix("plusButton_") == true }) {
+            print("🟢 hit plusButton")
+            if let plusNode = nodesAtPoint.first(where: { $0.name?.hasPrefix("plusButton_") == true }),
+               let name = plusNode.name {
+                let planetID = String(name.dropFirst("plusButton_".count))
+                if let itemID = planetItemMapping[planetID] {
+                    handlePlusButtonTap(planetID: planetID, itemID: itemID)
+                }
+            }
+            return
+        }
+
+//        // Plus overlay tapped (anywhere except plus button) — dismiss
+//        if let plusOverlayNode = nodesAtPoint.first(where: {
+//            $0.name?.hasPrefix("plusOverlay_") == true }),
+//           let overlayName = plusOverlayNode.name {
+//            print("🟢 hit plusOverlay")
+//            let planetID = String(overlayName.dropFirst("plusOverlay_".count))
+//            dismissPlantDiscoveryOverlay(planetID: planetID)
+//            return
+//        }
+
+        // Card overlay — tap anywhere to dismiss
+        if let cardOverlayNode = nodesAtPoint.first(where: { $0.name?.hasPrefix("cardOverlay_") == true }),
+           let overlayName = cardOverlayNode.name {
+            let planetID = String(overlayName.dropFirst("cardOverlay_".count))
+            dismissCardOverlay(planetID: planetID)
+            return
+        }
+        
         for node in nodesAtPoint {
-            // ✅ Check for quit button (any of its child nodes)
             if node.name == "quitButton" ||
                node.name == "quitButtonLabel" ||
                node.name == "quitButtonCircle" ||
@@ -265,7 +295,24 @@ final class NightExplorationScene: SKScene {
         }
     }
     
-    // ✅ Animate button press
+    private func dismissPlantDiscoveryOverlay(planetID: String) {
+        print("🗑️ Attempting dismiss for \(planetID)")
+        if let overlay = cameraNode.childNode(withName: "plusOverlay_\(planetID)") {
+            print("🗑️ Found overlay, removing")
+            overlay.run(.fadeOut(withDuration: 0.2)) {
+                overlay.removeFromParent()
+                // Only remove from tracking AFTER fade completes
+                self.planetsShowingButton.remove(planetID)
+            }
+        }
+    }
+
+    private func dismissCardOverlay(planetID: String) {
+        if let overlay = cameraNode.childNode(withName: "cardOverlay_\(planetID)") {
+            overlay.run(.fadeOut(withDuration: 0.2)) { overlay.removeFromParent() }
+        }
+    }
+    
     private func animateQuitButtonPress() {
         let scaleDown = SKAction.scale(to: 0.85, duration: 0.1)
         let scaleUp = SKAction.scale(to: 1.0, duration: 0.1)
@@ -275,25 +322,21 @@ final class NightExplorationScene: SKScene {
         SoundManger.instance.playSound(sound: .card)
     }
     
-    // ✅ Show quit confirmation popup
     private func showQuitConfirmation() {
-        // Prevent multiple popups
+        isDraggingFlashlight = false
         if cameraNode.childNode(withName: "quitConfirmationOverlay") != nil {
             return
         }
-        
         let overlay = SKNode()
         overlay.name = "quitConfirmationOverlay"
         overlay.zPosition = 500
         
-        // Semi-transparent background
-        let bg = SKSpriteNode(color: .black.withAlphaComponent(0.7), size: size)
+        let bg = SKSpriteNode(color: .black.withAlphaComponent(0.5), size: size)
         bg.position = .zero
         overlay.addChild(bg)
         
-        // Popup card background
-        let cardWidth: CGFloat = 280
-        let cardHeight: CGFloat = 180
+        let cardWidth: CGFloat = (size.width * 0.7)
+        let cardHeight: CGFloat = (size.height/6)
         let card = SKShapeNode(rectOf: CGSize(width: cardWidth, height: cardHeight), cornerRadius: 20)
         card.fillColor = .black.withAlphaComponent(0.9)
         card.strokeColor = .white.withAlphaComponent(0.1)
@@ -301,33 +344,29 @@ final class NightExplorationScene: SKScene {
         card.position = .zero
         overlay.addChild(card)
         
-        // Title
         let title = SKLabelNode(fontNamed: "Arial-BoldMT")
-        title.text = "Quit Exploration?"
+        title.text = "Quit Exploration"
         title.fontSize = 20
         title.fontColor = .white
-        title.position = CGPoint(x: 0, y: 40)
+        title.position = CGPoint(x: 0, y: 30)
         overlay.addChild(title)
         
-        // Cancel button
         let cancelButton = createConfirmationButton(
             text: "Cancel",
-            position: CGPoint(x: -70, y: -50),
-            color: .white.withAlphaComponent(0.1),
+            position: CGPoint(x: -70, y: -32),
+            color: .gray.withAlphaComponent(0.1),
             name: "cancelQuitButton"
         )
         overlay.addChild(cancelButton)
         
-        // Confirm button
         let confirmButton = createConfirmationButton(
             text: "Quit",
-            position: CGPoint(x: 70, y: -50),
-            color: .red.withAlphaComponent(0.2),
+            position: CGPoint(x: 70, y: -32),
+            color: .red.withAlphaComponent(0.8),
             name: "confirmQuitButton"
         )
         overlay.addChild(confirmButton)
         
-        // Add to camera with scale animation
         cameraNode.addChild(overlay)
         overlay.setScale(0.8)
         overlay.alpha = 0
@@ -337,21 +376,18 @@ final class NightExplorationScene: SKScene {
         overlay.run(.group([scaleUp, fadeIn]))
     }
     
-    // ✅ Create styled button for confirmation popup
     private func createConfirmationButton(text: String, position: CGPoint, color: UIColor, name: String) -> SKNode {
         let buttonContainer = SKNode()
         buttonContainer.position = position
         buttonContainer.name = name
         
-        // Button background
         let button = SKShapeNode(rectOf: CGSize(width: 112, height: 40), cornerRadius: 12)
-        button.fillColor = color.withAlphaComponent(0.1)
+        button.fillColor = color.withAlphaComponent(0.3)
         button.strokeColor = color.withAlphaComponent(0.3)
         button.lineWidth = 1
         button.name = "\(name)Shape"
         buttonContainer.addChild(button)
         
-        // Button label
         let label = SKLabelNode(fontNamed: "Arial-BoldMT")
         label.text = text
         label.fontSize = 16
@@ -363,48 +399,49 @@ final class NightExplorationScene: SKScene {
         return buttonContainer
     }
     
-    // ✅ Handle confirmation popup interactions
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
         
-        // Check if quit confirmation popup is showing
-        if let confirmationOverlay = cameraNode.childNode(withName: "quitConfirmationOverlay") {
+        if let _ = cameraNode.childNode(withName: "quitConfirmationOverlay") {
             let nodesAtPoint = nodes(at: location)
-            
             for node in nodesAtPoint {
-                // Confirm quit
                 if node.name?.contains("confirmQuitButton") == true {
                     animateButtonPress(node.parent ?? node)
                     dismissConfirmationAndQuit()
                     return
                 }
-                
-                // Cancel quit
                 if node.name?.contains("cancelQuitButton") == true {
                     animateButtonPress(node.parent ?? node)
                     dismissConfirmation()
                     return
                 }
             }
-            
-            // Tap outside popup to cancel
             if !nodesAtPoint.contains(where: { $0.name == "quitConfirmationOverlay" }) {
                 dismissConfirmation()
             }
             return
         }
         
-        // Normal flashlight release
         isDraggingFlashlight = false
         
-        let targetPosition = cameraNode.position
-        let snapBack = SKAction.move(to: targetPosition, duration: 0.3)
-        snapBack.timingMode = .easeOut
-        flashlight.run(snapBack)
+        if !hasActiveOverlay {
+            let snapBack = SKAction.move(to: cameraNode.position, duration: 0.3)
+            snapBack.timingMode = .easeOut
+            flashlight.run(snapBack)
+        }
+    }
+
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        isDraggingFlashlight = false
+        
+        if !hasActiveOverlay {
+            let snapBack = SKAction.move(to: cameraNode.position, duration: 0.3)
+            snapBack.timingMode = .easeOut
+            flashlight.run(snapBack)
+        }
     }
     
-    // ✅ Animate button press in popup
     private func animateButtonPress(_ button: SKNode) {
         let scaleDown = SKAction.scale(to: 0.9, duration: 0.1)
         let scaleUp = SKAction.scale(to: 1.0, duration: 0.1)
@@ -414,7 +451,6 @@ final class NightExplorationScene: SKScene {
         SoundManger.instance.playSound(sound: .card)
     }
     
-    // ✅ Dismiss confirmation popup
     private func dismissConfirmation() {
         guard let overlay = cameraNode.childNode(withName: "quitConfirmationOverlay") else { return }
         
@@ -426,7 +462,6 @@ final class NightExplorationScene: SKScene {
         }
     }
     
-    // ✅ Dismiss and quit - navigate to journeyV instead of collection
     private func dismissConfirmationAndQuit() {
         guard let overlay = cameraNode.childNode(withName: "quitConfirmationOverlay") else { return }
         
@@ -441,17 +476,36 @@ final class NightExplorationScene: SKScene {
         
         let fadeOut = SKAction.fadeOut(withDuration: 0.5)
         run(fadeOut) {
-            // ✅ Navigate to journeyV instead of collection
             self.appState?.route = .journeyV
         }
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first, isDraggingFlashlight else { return }
+        guard let touch = touches.first,
+              isDraggingFlashlight,
+              cameraNode.childNode(withName: "quitConfirmationOverlay") == nil
+        else { return }
+        
+        // Dismiss any plus overlay when user starts dragging
+        for child in cameraNode.children {
+            if let name = child.name, name.hasPrefix("plusOverlay_") {
+                let planetID = String(name.dropFirst("plusOverlay_".count))
+                dismissPlantDiscoveryOverlay(planetID: planetID)
+            }
+        }
         
         let location = touch.location(in: self)
         flashlight.position = location
         updateCameraPosition()
+    }
+    
+    private var hasActiveOverlay: Bool {
+        cameraNode.children.contains {
+            $0.name?.hasPrefix("plusOverlay_") == true ||
+            $0.name?.hasPrefix("cardOverlay_") == true ||
+            $0.name == "quitConfirmationOverlay" ||
+            $0.name == "instructionOverlay"
+        }
     }
     
     private func updateCameraPosition() {
@@ -477,14 +531,25 @@ final class NightExplorationScene: SKScene {
         )
     }
     
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        isDraggingFlashlight = false
-        
-        let targetPosition = cameraNode.position
-        let snapBack = SKAction.move(to: targetPosition, duration: 0.3)
-        snapBack.timingMode = .easeOut
-        flashlight.run(snapBack)
-    }
+//    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        isDraggingFlashlight = false
+//        
+//        let hasActiveOverlay = cameraNode.children.contains {
+//            $0.name?.hasPrefix("plantDiscoveryOverlay_") == true
+//        }
+//        
+//        if !hasActiveOverlay {
+//            let targetPosition = cameraNode.position
+//            let snapBack = SKAction.move(to: targetPosition, duration: 0.3)
+//            snapBack.timingMode = .easeOut
+//            flashlight.run(snapBack)
+//        }
+//        
+////        let targetPosition = cameraNode.position
+////        let snapBack = SKAction.move(to: targetPosition, duration: 0.3)
+////        snapBack.timingMode = .easeOut
+////        flashlight.run(snapBack)
+//    }
     
     // MARK: - Update Loop
     override func update(_ currentTime: TimeInterval) {
@@ -497,153 +562,263 @@ final class NightExplorationScene: SKScene {
     
     private func revealPlanets() {
         let flashlightPos = flashlight.position
-        
+
         planetsContainer.children.forEach { node in
             guard let planet = node as? SKSpriteNode else { return }
-            
+
             let distance = hypot(
                 planet.position.x - flashlightPos.x,
                 planet.position.y - flashlightPos.y
             )
-            
-            if distance < 450 {
-                planet.alpha = 1
+
+            // Tighter reveal radius — feels more like a real flashlight
+            let fullRevealDistance: CGFloat = 120
+            let fadeStartDistance: CGFloat = 220
+
+            let targetAlpha: CGFloat
+            if distance < fullRevealDistance {
+                targetAlpha = 1.0
+            } else if distance < fadeStartDistance {
+                // Smooth falloff between full reveal and fade start
+                let t = (distance - fullRevealDistance) / (fadeStartDistance - fullRevealDistance)
+                targetAlpha = 1.0 - t
             } else {
-                planet.alpha = max(0, 1 - (distance / 400))
+                targetAlpha = 0.0
             }
+
+            // Lerp current alpha toward target — slower reveal, faster fade
+            let lerpSpeed: CGFloat = distance < planet.alpha * fadeStartDistance ? 0.04 : 0.06
+            planet.alpha += (targetAlpha - planet.alpha) * lerpSpeed
         }
     }
     
     private func checkPlanetDiscovery() {
+        // Don't trigger new overlays while one is already showing or dismissing
+        guard !hasActiveOverlay else { return }
+        
         let flashlightPos = flashlight.position
         
         planetsContainer.children.forEach { node in
             guard let planet = node as? SKSpriteNode,
-                  let planetID = planet.name,
-                  !planetsDiscovered.contains(planetID) else { return }
+                  let planetID = planet.name else { return }
+            
+            if planetsDiscovered.contains(planetID) { return }
+            if planetsShowingButton.contains(planetID) { return }
             
             let distance = hypot(
                 planet.position.x - flashlightPos.x,
                 planet.position.y - flashlightPos.y
             )
             
-            if distance < 200 {
-                discoverPlanet(planetID)
+            if distance < 72 {
+                if let itemID = planetItemMapping[planetID] {
+                    showPlantDiscoveryOverlay(planetID: planetID, itemID: itemID)
+                }
             }
         }
     }
     
-    // ✅ Planet discovered - save item to AppState
-    private func discoverPlanet(_ planetID: String) {
+    private func showPlantDiscoveryOverlay(planetID: String, itemID: ItemID) {
+        guard let item = ItemData.getItem(by: itemID) else { return }
+        
+        isDraggingFlashlight = false
+        planetsShowingButton.insert(planetID)
+        
+        let overlay = SKNode()
+        overlay.name = "plusOverlay_\(planetID)"
+        overlay.zPosition = 300
+        
+        let bg = SKSpriteNode(color: .black.withAlphaComponent(0.3),
+                             size: CGSize(width: size.width, height: size.height))
+        bg.position = .zero
+        overlay.addChild(bg)
+        
+        let plusButton = SKShapeNode(circleOfRadius: 24)
+        plusButton.fillColor = .white.withAlphaComponent(0.9)
+        plusButton.strokeColor = .clear
+        plusButton.name = "plusButton_\(planetID)"
+        plusButton.position = .zero
+        overlay.addChild(plusButton)
+        
+        let plusLabel = SKLabelNode(fontNamed: "Arial-BoldMT")
+        plusLabel.text = "+"
+        plusLabel.fontSize = 28
+        plusLabel.fontColor = .black
+        plusLabel.verticalAlignmentMode = .center
+        plusLabel.name = "plusLabel"
+        plusLabel.position = .zero
+        plusButton.addChild(plusLabel)
+        
+        cameraNode.addChild(overlay)
+        overlay.alpha = 0
+        overlay.run(.fadeIn(withDuration: 0.3))
+        
+        HapticManger.instance.impact(style: .light)
+    }
+
+    private func showCardOverlay(planetID: String, itemID: ItemID) {
+        guard let item = ItemData.getItem(by: itemID) else { return }
+        
+        let overlay = SKNode()
+        overlay.name = "cardOverlay_\(planetID)"
+        overlay.zPosition = 300
+        
+        let bg = SKSpriteNode(color: .black.withAlphaComponent(0.3),
+                             size: CGSize(width: size.width, height: size.height))
+        bg.position = .zero
+        overlay.addChild(bg)
+        
+        // Checkmark button at top
+        let checkButton = SKShapeNode(circleOfRadius: 24)
+        checkButton.fillColor = .green.withAlphaComponent(0.9)
+        checkButton.strokeColor = .clear
+        checkButton.position = CGPoint(x: 0, y: 80)
+        overlay.addChild(checkButton)
+        
+        let checkLabel = SKLabelNode(fontNamed: "Arial-BoldMT")
+        checkLabel.text = "✓"
+        checkLabel.fontSize = 24
+        checkLabel.fontColor = .white
+        checkLabel.verticalAlignmentMode = .center
+        checkButton.addChild(checkLabel)
+        
+        // Card slides up from below
+        let cardNode = buildItemCard(item: item)
+        cardNode.name = "itemCard"
+        cardNode.position = CGPoint(x: 0, y: -size.height * 0.5)
+        cardNode.alpha = 0
+        overlay.addChild(cardNode)
+        
+        cameraNode.addChild(overlay)
+        overlay.alpha = 0
+        overlay.run(.fadeIn(withDuration: 0.2))
+        
+        // Slide card up
+        let slideUp = SKAction.move(to: CGPoint(x: 0, y: -40), duration: 0.45)
+        slideUp.timingMode = .easeOut
+        let fadeIn = SKAction.fadeIn(withDuration: 0.35)
+        cardNode.run(.group([slideUp, fadeIn]))
+        
+        // Auto-dismiss after 5s
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5.5) {
+            overlay.run(.fadeOut(withDuration: 0.4)) {
+                overlay.removeFromParent()
+            }
+        }
+    }
+
+    private func handlePlusButtonTap(planetID: String, itemID: ItemID) {
+        guard !planetsDiscovered.contains(planetID) else { return }
+        
+        // Remove plus overlay
+        if let plusOverlay = cameraNode.childNode(withName: "plusOverlay_\(planetID)") {
+            plusOverlay.run(.fadeOut(withDuration: 0.2)) {
+                plusOverlay.removeFromParent()
+            }
+        }
+        
         planetsDiscovered.insert(planetID)
+        appState?.discoverItem(itemID)
         
         HapticManger.instance.impact(style: .medium)
         SoundManger.instance.playSound(sound: .card)
         
-      //  showDiscoveryAnimation(for: planetID)
-        
-        // ✅ Get the actual item from ItemData and save to AppState
-        if let itemID = planetItemMapping[planetID] {
-            appState?.discoverItem(itemID)
-            showItemPreview(itemID: itemID)
+        // Show card overlay after brief delay
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+            self.showCardOverlay(planetID: planetID, itemID: itemID)
         }
         
-        updateCounter()
-        
-        print("✅ Discovered: \(planetID). Counter: \(planetsDiscovered.count)/\(requiredPlanets)")
-        
-        // ✅ Check completion after last item preview dismisses
         if planetsDiscovered.count >= requiredPlanets {
-            // Wait for item preview to dismiss before showing completion
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 6.5) {
                 self.completeExploration()
             }
         }
     }
     
-//    private func showDiscoveryAnimation(for planetID: String) {
-//        guard let planet = planetsContainer.childNode(withName: planetID) as? SKSpriteNode else { return }
-//        
-//        let glow = SKSpriteNode(color: .yellow, size: CGSize(width: planet.size.width * 1.5, height: planet.size.height * 1.5))
-//        glow.position = planet.position
-//        glow.alpha = 0
-//        glow.zPosition = planet.zPosition - 1
-//        planetsContainer.addChild(glow)
-//        
-//        let glowSequence = SKAction.sequence([
-//            .fadeAlpha(to: 0.6, duration: 0.2),
-//            .fadeOut(withDuration: 0.3)
-//        ])
-//        glow.run(glowSequence) {
-//            glow.removeFromParent()
-//        }
-//        
-//        let pulse = SKAction.sequence([
-//            .scale(to: 0.7, duration: 0.1),
-//            .scale(to: 0.6, duration: 0.1)
-//        ])
-//        planet.run(pulse)
-//    }
-    
-    // ✅ Show item preview - dismissible by tap
-    private func showItemPreview(itemID: ItemID) {
-        guard let item = ItemData.getItem(by: itemID) else { return }
+    private func buildItemCard(item: Item) -> SKNode {
+        let container = SKNode()
         
-        let overlay = SKNode()
-        overlay.name = "itemPreview"
-        overlay.zPosition = 300
+        let cardWidth: CGFloat = size.width * 0.8
+        let cardHeight: CGFloat = size.height * 0.20
+        let card = SKShapeNode(rectOf: CGSize(width: cardWidth, height: cardHeight), cornerRadius: 20)
         
-        let bg = SKSpriteNode(color: .black.withAlphaComponent(0.3),
-                             size: CGSize(width: size.width, height: size.height))
-        bg.position = CGPoint(x: 0, y: 0)
-        overlay.addChild(bg)
-        
-        // Item image (using imageName)
         if let imageName = item.imageName {
-            let itemImage = SKSpriteNode(imageNamed: imageName)
-            itemImage.setScale(0.4)
-            itemImage.position = CGPoint(x: 0, y: 40)
-            overlay.addChild(itemImage)
+            card.fillTexture = SKTexture(imageNamed: imageName)
+            card.fillColor = .white
+        } else {
+            card.fillColor = .black.withAlphaComponent(0.8)
         }
         
-        // Item name
+        card.strokeColor = .white.withAlphaComponent(0.3)
+        card.lineWidth = 2
+        card.position = .zero
+        container.addChild(card)
+        
         let nameLabel = SKLabelNode(fontNamed: "Arial-BoldMT")
         nameLabel.text = item.name
         nameLabel.fontSize = 18
         nameLabel.fontColor = .white
-        nameLabel.position = CGPoint(x: 0, y: -20)
-        overlay.addChild(nameLabel)
+        nameLabel.position = CGPoint(x: 0, y: -(cardHeight / 2) - 24)
+        container.addChild(nameLabel)
         
-        // "Collected!" text
-        let collectedLabel = SKLabelNode(fontNamed: "Arial")
-        collectedLabel.text = "Collected!"
-        collectedLabel.fontSize = 14
-        collectedLabel.fontColor = .white
-        collectedLabel.position = CGPoint(x: 0, y: -45)
-        overlay.addChild(collectedLabel)
+        return container
+    }
+
+    private func handlePlusButtonTapold(planetID: String, itemID: ItemID) {
+        guard let overlay = cameraNode.childNode(withName: "plantDiscoveryOverlay_\(planetID)") else { return }
+        guard let plusButton = overlay.childNode(withName: "plusButton_\(planetID)") as? SKShapeNode else { return }
+        guard let itemCard = overlay.childNode(withName: "itemCard") else { return }
         
-        // ✅ "Tap to continue" hint
-        let tapHint = SKLabelNode(fontNamed: "Arial")
-        tapHint.text = " "
-        tapHint.fontSize = 12
-        tapHint.fontColor = .gray
-        tapHint.position = CGPoint(x: 0, y: -80)
-        overlay.addChild(tapHint)
+        // Guard against double-tap
+        guard !planetsDiscovered.contains(planetID) else { return }
         
-        // Pulse animation for tap hint
+        planetsDiscovered.insert(planetID)
+        appState?.discoverItem(itemID)
+        
+        HapticManger.instance.impact(style: .medium)
+        SoundManger.instance.playSound(sound: .card)
+        
+        // Swap plus → checkmark
+        plusButton.childNode(withName: "plusLabel")?.removeFromParent()
+        plusButton.fillColor = .green.withAlphaComponent(0.8)
+        
+        let checkLabel = SKLabelNode(fontNamed: "Arial-BoldMT")
+        checkLabel.text = "✓"
+        checkLabel.fontSize = 20
+        checkLabel.fontColor = .white
+        checkLabel.verticalAlignmentMode = .center
+        plusButton.addChild(checkLabel)
+        
         let pulse = SKAction.sequence([
-            .fadeAlpha(to: 0.5, duration: 0.6),
-            .fadeAlpha(to: 1.0, duration: 0.6)
+            .scale(to: 1.2, duration: 0.15),
+            .scale(to: 1.0, duration: 0.15)
         ])
-        tapHint.run(.repeatForever(pulse))
+        let moveButtonUp = SKAction.move(to: CGPoint(x: 0, y: 80), duration: 0.4)
+        moveButtonUp.timingMode = .easeOut
         
-        cameraNode.addChild(overlay)
+        // After moving up, fade the button out and remove it
+        let fadeOutButton = SKAction.fadeOut(withDuration: 0.2)
+        let removeButton = SKAction.removeFromParent()
+        plusButton.run(.sequence([pulse, moveButtonUp, fadeOutButton, removeButton]))
         
-        // ✅ Auto-dismiss after 2 seconds (but user can tap to dismiss earlier)
-        let wait = SKAction.wait(forDuration: 5.0)
-        let fadeOut = SKAction.fadeOut(withDuration: 0.3)
-        overlay.run(.sequence([wait, fadeOut])) {
-            overlay.removeFromParent()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+            let slideUp = SKAction.move(to: CGPoint(x: 0, y: -40), duration: 0.45)
+            slideUp.timingMode = .easeOut
+            let fadeIn = SKAction.fadeIn(withDuration: 0.35)
+            itemCard.run(.group([slideUp, fadeIn]))
+        }
+        
+        // Auto-dismiss after 5s
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5.5) {
+            overlay.run(.fadeOut(withDuration: 0.4)) {
+                overlay.removeFromParent()
+            }
+        }
+        
+        if planetsDiscovered.count >= requiredPlanets {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 6.5) {
+                self.completeExploration()
+            }
         }
     }
     
@@ -661,7 +836,6 @@ final class NightExplorationScene: SKScene {
         }
     }
     
-    // ✅ Completion overlay shows after last item preview dismisses
     private func showCompletionOverlay() {
         let overlay = SKNode()
         overlay.name = "completionOverlay"
@@ -673,7 +847,7 @@ final class NightExplorationScene: SKScene {
         let title = SKLabelNode(fontNamed: "Arial-BoldMT")
         title.text = "Exploration Complete!"
         title.fontSize = 24
-        title.fontColor = .green
+        title.fontColor = .white
         title.position = CGPoint(x: 0, y: 40)
         overlay.addChild(title)
         
@@ -687,36 +861,166 @@ final class NightExplorationScene: SKScene {
         cameraNode.addChild(overlay)
     }
 }
-    /*
-    // TODO: OLD Collection Logic (commented out)
-    private var itemsCollected: [String] = []
     
-    private func checkPlantCollection(at location: CGPoint) {
-        let nodes = self.nodes(at: location)
-        for node in nodes {
-            if let plant = node as? SKSpriteNode,
-               let plantID = plant.name,
-               !itemsCollected.contains(plantID) {
-                collectPlant(plant, id: plantID)
-            }
-        }
-    }
+    // ✅ Show full-screen overlay with plus button
+//    private func showPlantDiscoveryOverlay(planetID: String, itemID: ItemID) {
+//        guard let item = ItemData.getItem(by: itemID) else { return }
+//        
+//        // ✅ Stop flashlight movement when overlay appears
+//        isDraggingFlashlight = false
+//        
+//        // Prevent showing multiple times
+//        planetsShowingButton.insert(planetID)
+//        
+//        let overlay = SKNode()
+//        overlay.name = "plantDiscoveryOverlay_\(planetID)"
+//        overlay.zPosition = 300
+//        
+//        // Semi-transparent background
+//        let bg = SKSpriteNode(color: .black.withAlphaComponent(0.3),
+//                             size: CGSize(width: size.width, height: size.height))
+//        bg.position = .zero
+//        overlay.addChild(bg)
+//        
+//        // Plus button
+//        let plusButton = SKShapeNode(circleOfRadius: 20)
+//        plusButton.fillColor = .white.withAlphaComponent(0.8)
+//        plusButton.strokeColor = .clear
+//        plusButton.name = "plusButton_\(planetID)"
+//        plusButton.position = CGPoint(x: 0, y: 0)
+//        overlay.addChild(plusButton)
+//        
+//        // Plus icon
+//        let plusLabel = SKLabelNode(fontNamed: "Arial-BoldMT")
+//        plusLabel.text = "+"
+//        plusLabel.fontSize = 24
+//        plusLabel.fontColor = .black
+//        plusLabel.verticalAlignmentMode = .center
+//        plusLabel.name = "plusLabel"
+//        plusLabel.position = .zero
+//        plusButton.addChild(plusLabel)
+//        
+//        cameraNode.addChild(overlay)
+//        
+//        // Fade in animation
+//        overlay.alpha = 0
+//        overlay.run(.fadeIn(withDuration: 0.3))
+//        
+//        HapticManger.instance.impact(style: .light)
+//        
+//        print("➕ Showing plus button for \(planetID)")
+//    }
+//    
+//    // ✅ Handle plus button tap - change to green checkmark, then show image
+//    private func handlePlusButtonTap(planetID: String, itemID: ItemID) {
+//        guard let overlay = cameraNode.childNode(withName: "plantDiscoveryOverlay_\(planetID)") else { return }
+//        guard let plusButton = overlay.childNode(withName: "plusButton_\(planetID)") as? SKShapeNode else { return }
+//        
+//        // Mark as discovered
+//        planetsDiscovered.insert(planetID)
+//        appState?.discoverItem(itemID)
+//        
+//        // Haptic feedback
+//        HapticManger.instance.impact(style: .medium)
+//        SoundManger.instance.playSound(sound: .card)
+//        
+//        // Change to green checkmark
+//        plusButton.fillColor = .green.withAlphaComponent(0.8)
+//        
+//        // Remove plus label
+//        plusButton.childNode(withName: "plusLabel")?.removeFromParent()
+//        
+//        // Add checkmark
+//        let checkLabel = SKLabelNode(fontNamed: "Arial-BoldMT")
+//        checkLabel.text = "✓"
+//        checkLabel.fontSize = 20
+//        checkLabel.fontColor = .white
+//        checkLabel.verticalAlignmentMode = .center
+//        plusButton.addChild(checkLabel)
+//        
+//        // Pulse animation
+//        let pulse = SKAction.sequence([
+//            .scale(to: 1.2, duration: 0.15),
+//            .scale(to: 1.0, duration: 0.15)
+//        ])
+//        plusButton.run(pulse)
+//        
+//        // Update counter
+////        updateCounter()
+////        
+//        print("✅ Collected: \(planetID). Counter: \(planetsDiscovered.count)/\(requiredPlanets)")
+//        
+//        // Wait 1 second, then dismiss name+button overlay and show image
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+//            // Dismiss the name+button overlay
+//            overlay.run(.fadeOut(withDuration: 0.3)) {
+//                overlay.removeFromParent()
+//            }
+//            
+//            // Show the plant image preview
+//            self.showItemPreview(itemID: itemID)
+//        }
+//        
+//        // Check completion
+//        if planetsDiscovered.count >= requiredPlanets {
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 6.5) {
+//                self.completeExploration()
+//            }
+//        }
+//    }
+//    
+//    // ✅ Show item preview - full screen with image
+//    private func showItemPreview(itemID: ItemID) {
+//        guard let item = ItemData.getItem(by: itemID) else { return }
+//        
+//        let overlay = SKNode()
+//        overlay.name = "itemPreview"
+//        overlay.zPosition = 300
+//        
+//        let bg = SKSpriteNode(color: .black.withAlphaComponent(0.3),
+//                             size: CGSize(width: size.width, height: size.height))
+//        bg.position = .zero
+//        overlay.addChild(bg)
+//        
+//        // Rounded rectangle container with optional texture fill
+//        if let imageName = item.imageName {
+//            let cardWidth: CGFloat = size.width * 0.8
+//            let cardHeight: CGFloat = size.height * 0.20
+//            let card = SKShapeNode(rectOf: CGSize(width: cardWidth, height: cardHeight), cornerRadius: 20)
+//            // SKTexture(imageNamed:) is non-optional; assign directly
+//            let texture = SKTexture(imageNamed: imageName)
+//            card.fillTexture = texture
+//            card.fillColor = .white // ensure texture shows
+//            card.strokeColor = .white.withAlphaComponent(0.3)
+//            card.lineWidth = 2
+//            card.position = .zero
+//            overlay.addChild(card)
+//            
+//            // Item name label added to the same card
+//            let nameLabel = SKLabelNode(fontNamed: "Arial-BoldMT")
+//            nameLabel.text = item.name
+//            nameLabel.fontSize = 18
+//            nameLabel.fontColor = .white
+//            nameLabel.position = CGPoint(x: 0, y: -120)
+//            overlay.addChild(nameLabel)
+//        } else {
+//            // Fallback: show name centered if no imageName
+//            let nameLabel = SKLabelNode(fontNamed: "Arial-BoldMT")
+//            nameLabel.text = item.name
+//            nameLabel.fontSize = 18
+//            nameLabel.fontColor = .white
+//            nameLabel.position = CGPoint(x: 0, y: 0)
+//            overlay.addChild(nameLabel)
+//        }
+//        
+//        cameraNode.addChild(overlay)
+//        
+//        // Auto-dismiss after 5 seconds
+//        let wait = SKAction.wait(forDuration: 5.0)
+//        let fadeOut = SKAction.fadeOut(withDuration: 0.3)
+//        overlay.run(.sequence([wait, fadeOut])) {
+//            overlay.removeFromParent()
+//        }
+//    }
     
-    private func collectPlant(_ plant: SKSpriteNode, id: String) {
-        HapticManger.instance.impact(style: .medium)
-        SoundManger.instance.playSound(sound: .card)
-        
-        itemsCollected.append(id)
-        
-        let scaleUp = SKAction.scale(to: 1.5, duration: 0.2)
-        let fadeOut = SKAction.fadeOut(withDuration: 0.3)
-        let remove = SKAction.removeFromParent()
-        plant.run(.sequence([scaleUp, fadeOut, remove]))
-        
-        if itemsCollected.count >= requiredItems {
-            completeExploration()
-        }
-    }
-    */
-//}
 
