@@ -16,4 +16,10 @@ struct Item: Identifiable, Codable, Hashable {
     let description: String?
     let imageName: String?
     let iconAsset: String?
+    
+    // ✅ NEW PROPERTIES
+    let isPoisonous: Bool
+    let length: String
+    let specialFeature: String
+    let season: String
 }

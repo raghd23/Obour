@@ -42,8 +42,22 @@ struct ItemCardView: View {
                         .foregroundColor(.white)
                         .padding(.leading, 10)
                     Spacer()
+                    // Badge (Not Poisonous)
+                    HStack {
+                        Image(systemName: item.isPoisonous ? "exclamationmark.triangle.fill" : "checkmark.seal.fill")
+                            .foregroundColor(item.isPoisonous ? .red : .green)
+                            .foregroundColor(Color.yellow)
+                        
+                        Text(item.isPoisonous ? "Thorny" : "Not Poisonous")
+                            .font(.caption)
+                            .foregroundColor(.white)
+                            .lineLimit(5)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .glassEffect(.regular.tint(Color.gray.opacity(0.1)))
                 }
-                
+                .padding(.trailing, 10)
                 // Item description
                 HStack {
                     Text(item.description ?? "")
@@ -51,26 +65,45 @@ struct ItemCardView: View {
                         .foregroundColor(.gray)
                         .lineLimit(5)
                         .padding(.leading, 10)
-                    Spacer()
+                                        Spacer()
                 }
-                
-                // Badge (Not Poisonous)
-                HStack {
-                    Image(systemName: "hazardsign.fill")
-                        .foregroundColor(Color.yellow)
+                VStack {
+                    HStack {
+                        VStack {
+                            HStack{
+                                Image(systemName: "ruler")
+                                Text("Length")
+                            }
+                            .foregroundColor(.gray)
+                            Text("\(item.length)")
+                                .foregroundColor(.white)
+                        }
+                        .padding(.trailing, 20)
+                        VStack {
+                            HStack{
+                                Image(systemName: "sparkles")
+                                Text("Special")
+                            }
+                            .foregroundColor(.gray)
+                           Text("\(item.specialFeature)")
+                                .foregroundColor(.white)
+                       }
+                        .padding(.trailing, 20)
+                        VStack {
+                            HStack{
+                                Image(systemName: "calendar")
+                                Text("Season")
+                            }
+                            .foregroundColor(.gray)
+                            Text("\(item.season)")
+                                .foregroundColor(.white)
+                        }
+                        .padding(.trailing, 20)
+                    }
                     
-                    Text("Not Poisonous")
-                        .font(.caption)
-                        .foregroundColor(.white)
-                        .lineLimit(5)
-                        .padding(.leading, 10)
                 }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background {
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                }
-                .glassEffect(.clear)
+                .font(.caption2)
+                .padding(.top, 4)
             }
         }
         .frame(width: 375, height: 380)

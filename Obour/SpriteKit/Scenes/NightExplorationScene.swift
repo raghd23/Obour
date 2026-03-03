@@ -172,21 +172,21 @@ final class NightExplorationScene: SKScene {
         overlay.addChild(bg)
         
         let title = SKLabelNode(fontNamed: "Arial-BoldMT")
-        title.text = "Night Exploration"
+        title.text = String(localized:"Night Exploration")
         title.fontSize = 24
         title.fontColor = .white
         title.position = CGPoint(x: 0, y: 120)
         overlay.addChild(title)
         
         let instruction1 = SKLabelNode(fontNamed: "Arial")
-        instruction1.text = "Drag the flashlight to explore"
+        instruction1.text = String(localized:"Drag the flashlight to explore")
         instruction1.fontSize = 16
         instruction1.fontColor = .white
         instruction1.position = CGPoint(x: 0, y: 60)
         overlay.addChild(instruction1)
         
         let instruction2 = SKLabelNode(fontNamed: "Arial")
-        instruction2.text = "Tap + to collect the 3 plants"
+        instruction2.text = String(localized:"Tap + to collect the 3 plants")
         instruction2.fontSize = 16
         instruction2.fontColor = .white
         instruction2.position = CGPoint(x: 0, y: 30)
@@ -199,7 +199,7 @@ final class NightExplorationScene: SKScene {
         overlay.addChild(flashlightHint)
         
         let tapLabel = SKLabelNode(fontNamed: "Arial")
-        tapLabel.text = "Tap anywhere to begin"
+        tapLabel.text = String(localized:"Tap anywhere to begin")
         tapLabel.fontSize = 14
         tapLabel.fontColor = .gray
         tapLabel.position = CGPoint(x: 0, y: -100)
