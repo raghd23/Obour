@@ -826,8 +826,8 @@ final class NightExplorationScene: SKScene {
         isDraggingFlashlight = false
         print("🎉 All plants discovered!")
         
-        showCompletionOverlay()
-        
+      //  showCompletionOverlay()
+    
         let wait = SKAction.wait(forDuration: 2.0)
         let fadeOut = SKAction.fadeOut(withDuration: 1.0)
         
@@ -836,30 +836,30 @@ final class NightExplorationScene: SKScene {
         }
     }
     
-    private func showCompletionOverlay() {
-        let overlay = SKNode()
-        overlay.name = "completionOverlay"
-        overlay.zPosition = 350
-        
-        let bg = SKSpriteNode(color: .black.withAlphaComponent(0.8), size: size)
-        overlay.addChild(bg)
-        
-        let title = SKLabelNode(fontNamed: "Arial-BoldMT")
-        title.text = "Exploration Complete!"
-        title.fontSize = 24
-        title.fontColor = .white
-        title.position = CGPoint(x: 0, y: 40)
-        overlay.addChild(title)
-        
-        let subtitle = SKLabelNode(fontNamed: "Arial")
-        subtitle.text = "All plants collected"
-        subtitle.fontSize = 16
-        subtitle.fontColor = .white
-        subtitle.position = CGPoint(x: 0, y: 10)
-        overlay.addChild(subtitle)
-        
-        cameraNode.addChild(overlay)
-    }
+//    private func showCompletionOverlay() {
+//        let overlay = SKNode()
+//        overlay.name = "completionOverlay"
+//        overlay.zPosition = 350
+//        
+//        let bg = SKSpriteNode(color: .black.withAlphaComponent(0.8), size: size)
+//        overlay.addChild(bg)
+//        
+//        let title = SKLabelNode(fontNamed: "Arial-BoldMT")
+//        title.text = "Exploration Complete!"
+//        title.fontSize = 24
+//        title.fontColor = .white
+//        title.position = CGPoint(x: 0, y: 40)
+//        overlay.addChild(title)
+//        
+//        let subtitle = SKLabelNode(fontNamed: "Arial")
+//        subtitle.text = "All plants collected"
+//        subtitle.fontSize = 16
+//        subtitle.fontColor = .white
+//        subtitle.position = CGPoint(x: 0, y: 10)
+//        overlay.addChild(subtitle)
+//        
+//        cameraNode.addChild(overlay)
+//    }
 }
     
     // ✅ Show full-screen overlay with plus button

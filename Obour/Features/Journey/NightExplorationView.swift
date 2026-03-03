@@ -59,7 +59,7 @@ struct NightExplorationView: View {
             print("✅ NightExploration completed")
             
             // Navigate to collection view
-            appState.route = .collection
+            appState.route = .end
         }
         
         return scene
@@ -71,65 +71,4 @@ struct NightExplorationView: View {
         .environmentObject(AppState())
 }
 
-//
-//import SwiftUI
-//
-//import SpriteKit
-//
-//
-//
-//struct NightExplorationView: View {
-//
-//   @EnvironmentObject var appState: AppState
-//
-//   
-//
-//   var body: some View {
-//
-//       SpriteView(scene: createScene())
-//
-//           .ignoresSafeArea()
-//
-//   }
-//
-//   
-//
-//   private func createScene() -> NightExplorationScene {
-//
-//       let scene = NightExplorationScene()
-//
-//       scene.size = UIScreen.main.bounds.size
-//
-//       scene.scaleMode = .resizeFill
-//
-//       
-//
-//       // ✅ Pass AppState reference (scene gets journey from appState.journey)
-//
-//       scene.appState = appState
-//
-//       
-//
-//       // ✅ Handle completion - navigate to CollectionView
-//
-//       scene.onComplete = {
-//
-//           print("✅ NightExploration completed")
-//
-////            print("📊 Items discovered: \(appState.journey.discoveredItemIDs.count)/\(appState.journey.items.count)")
-//
-//           
-//
-//           // Navigate to collection view
-//
-//           appState.route = .collection
-//
-//       }
-//
-//       
-//
-//       return scene
-//
-//   }
-//
-//} 
+
